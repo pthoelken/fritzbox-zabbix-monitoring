@@ -1,0 +1,8 @@
+#!/bin/bash
+
+while true; do
+	php status.php | zabbix_sender -vv -z $ZABBIX_SERVER -i -
+	sleep $INTERVAL &
+	wait $!
+done
+

@@ -1,0 +1,12 @@
+version: '3.2'
+services:
+  fritzbox-zabbix-monitoring:
+    image: pthoelken/fritzbox-zabbix-monitoring:latest
+    restart: always
+    environment:
+      - ZABBIX_SERVER=000.000.000.000
+      - FRITZBOX_HOSTNAME=fritz.box
+      - FRITZBOX_IP=000.000.000.000
+      - INTERVAL=30s
+      - FRITZBOX_USER=zabbixmonitor
+      - FRITZBOX_PASSWD=changeme
