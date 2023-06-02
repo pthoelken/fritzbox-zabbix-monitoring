@@ -21,3 +21,6 @@ fritzbox-zabbix-monitoring-fritzbox-zabbix-monitoring-1  | Sending failed.
 ## Roadmap
 [] Alerts
 [] ...
+
+## DockerHub
+https://hub.docker.com/r/pthoelken/fritzbox-zabbix-monitoring
