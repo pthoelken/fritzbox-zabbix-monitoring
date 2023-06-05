@@ -15,8 +15,9 @@ First of all, a thanks to https://github.com/suptimal/zabbix-fritz.box-collector
 4. ```docker image ls```
 
 ## Known Errors
-fritzbox-zabbix-monitoring-fritzbox-zabbix-monitoring-1  | zabbix_sender [8]: ERROR: [line 1] 'Hostname' required
-fritzbox-zabbix-monitoring-fritzbox-zabbix-monitoring-1  | Sending failed.
+```fritzbox-zabbix-monitoring-fritzbox-zabbix-monitoring-1  | zabbix_sender [8]: ERROR: [line 1] 'Hostname' required
+fritzbox-zabbix-monitoring-fritzbox-zabbix-monitoring-1  | Sending failed.```
+- This error can be solved by removing the " chars in your environment section from docker-compose.yml
 
 ## Roadmap
 - Alerts
