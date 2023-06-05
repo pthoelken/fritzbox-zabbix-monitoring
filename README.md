@@ -19,8 +19,7 @@ fritzbox-zabbix-monitoring-fritzbox-zabbix-monitoring-1  | zabbix_sender [8]: ER
 fritzbox-zabbix-monitoring-fritzbox-zabbix-monitoring-1  | Sending failed.
 
 ## Roadmap
-[] Alerts
-[] ...
+- Alerts
 
 ## DockerHub
 https://hub.docker.com/r/pthoelken/fritzbox-zabbix-monitoring
