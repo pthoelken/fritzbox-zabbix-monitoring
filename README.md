@@ -14,6 +14,10 @@ First of all, a thanks to https://github.com/suptimal/zabbix-fritz.box-collector
 3. ```docker build --no-cache -t fritzbox-zabbix-monitoring```
 4. ```docker image ls```
 
+If you want to build the image for other plattforms you can run this command as example: 
+```docker buildx create --use --name builder --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6```
+```docker buildx build -t pthoelken/fritzbox-zabbix-monitoring:latest --load --no-cache --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6 -f Dockerfile .```
+
 ## Known Errors
 ```
 fritzbox-zabbix-monitoring-fritzbox-zabbix-monitoring-1  | zabbix_sender [8]: ERROR: [line 1] 'Hostname' required
