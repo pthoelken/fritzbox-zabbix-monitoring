@@ -12,13 +12,8 @@ First of all, a thanks to https://github.com/suptimal/zabbix-fritz.box-collector
 1. ```git clone XX```
 2. ```cd container```
 3. ```docker build --no-cache -t fritzbox-zabbix-monitoring```
-4. ```docker image ls```
 
-If you want to build the image for other plattforms you can run this command as example: 
-```
-docker buildx create --use --name builder --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6
-docker buildx build -t pthoelken/fritzbox-zabbix-monitoring:latest --load --no-cache --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6 -f Dockerfile .
-```
+For more information checkout the build file in this repo.
 
 ## Known Errors
 ```
@@ -26,9 +21,6 @@ fritzbox-zabbix-monitoring-fritzbox-zabbix-monitoring-1  | zabbix_sender [8]: ER
 fritzbox-zabbix-monitoring-fritzbox-zabbix-monitoring-1  | Sending failed.
 ```
 - This error can be solved by removing the " chars in your environment section from docker-compose.yml
-
-## Roadmap
-- Alerts
 
 ## DockerHub
 https://hub.docker.com/r/pthoelken/fritzbox-zabbix-monitoring
