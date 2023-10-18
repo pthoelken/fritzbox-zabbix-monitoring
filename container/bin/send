@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ash
 
 while true; do
 	php status.php | zabbix_sender -vv -z $ZABBIX_SERVER -i -
