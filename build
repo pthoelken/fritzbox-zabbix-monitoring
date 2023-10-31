@@ -1,7 +1,9 @@
 #!/bin/bash -e
 
-dos2unix bin/* && \
-docker image prune -a -f && \
-docker buildx create --use --name builder --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6 && \
-docker buildx build -t pthoelken/fritzbox-zabbix-monitoring:latest --push --no-cache --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6 -f Dockerfile . && \
+cd container
+
+dos2unix bin/*
+docker image prune -a -f
+docker buildx create --use --name builder --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6
+docker buildx build -t pthoelken/fritzbox-zabbix-monitoring:$1 --push --force-rm --no-cache --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6 -f Dockerfile .
 docker buildx rm builder

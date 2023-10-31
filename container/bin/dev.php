@@ -10,7 +10,7 @@ $client = new SoapClient(
     array(
         'location'   => "http://".$fritzbox_ip.":49000/igdupnp/control/WANCommonIFC1",
         'uri'        => "urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1",
-        'noroot'     => True
+        'noroot'     => False
     )
 );
 $addonInfos = $client->GetAddonInfos();  
@@ -20,8 +20,9 @@ print($hostname . " totalBytesReceived " . $addonInfos["NewTotalBytesReceived"] 
 print($hostname . " layer1UpstreamMaxBitRate " . $commonLinkProperties["NewLayer1UpstreamMaxBitRate"] . "\n");
 print($hostname . " layer1DownstreamMaxBitRate " . $commonLinkProperties["NewLayer1DownstreamMaxBitRate"] . "\n");
 print($hostname . " physicalLinkStatus " . $commonLinkProperties["NewPhysicalLinkStatus"] . "\n");
-# print($hostname . " layer1DownstreamCurrentUtilization " . $commonLinkProperties["NewLayer1DownstreamCurrentUtilization"] . "\n");
-# print($hostname . " layer1UpstreamCurrentUtilization " . $commonLinkProperties["NewLayer1UpstreamCurrentUtilization"] . "\n");
+# print($hostname . " dev " . $commonLinkProperties["X_AVM-DE_DownStreamCurrentUtilization"] . "\n");
+print($hostname . " dev " . $commonLinkProperties["X_AVM-DE_DownstreamCurrentUtilization"] . "\n");
+print($hostname . " dev " . $commonLinkProperties["X_AVM-DE_UpstreamCurrentUtilization"] . "\n");
 
 ## wan status
 $client = new SoapClient(
