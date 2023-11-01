@@ -10,7 +10,7 @@ $client = new SoapClient(
     array(
         'location'   => "http://".$fritzbox_ip.":49000/igdupnp/control/WANCommonIFC1",
         'uri'        => "urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1",
-        'noroot'     => False
+        'noroot'     => True
     )
 );
 $addonInfos = $client->GetAddonInfos();  
@@ -20,9 +20,22 @@ print($hostname . " totalBytesReceived " . $addonInfos["NewTotalBytesReceived"] 
 print($hostname . " layer1UpstreamMaxBitRate " . $commonLinkProperties["NewLayer1UpstreamMaxBitRate"] . "\n");
 print($hostname . " layer1DownstreamMaxBitRate " . $commonLinkProperties["NewLayer1DownstreamMaxBitRate"] . "\n");
 print($hostname . " physicalLinkStatus " . $commonLinkProperties["NewPhysicalLinkStatus"] . "\n");
-# print($hostname . " dev " . $commonLinkProperties["X_AVM-DE_DownStreamCurrentUtilization"] . "\n");
-print($hostname . " dev " . $commonLinkProperties["X_AVM-DE_DownstreamCurrentUtilization"] . "\n");
-print($hostname . " dev " . $commonLinkProperties["X_AVM-DE_UpstreamCurrentUtilization"] . "\n");
+
+
+$client = new SoapClient(
+    null,
+    array(
+        'location' => "http://".$fritzbox_ip.":49000/upnp/control/wancommonifconfig1",
+        'uri' => "urn:dslforum-org:service:WANCommonInterfaceConfig:1",
+        'noroot' => True,
+    'login'      => $fritz_user,
+	'password'   => $fritz_password
+    )
+);
+$commonLinkProperties = $client->GetCommonLinkProperties();
+print($hostname . " layer1DownstreamCurrentUtilization " . $commonLinkProperties["NewX_AVM-DE_DownstreamCurrentUtilization"] . "\n");
+print($hostname . " layer1UpstreamCurrentUtilization " . $commonLinkProperties["NewX_AVM-DE_UpstreamCurrentUtilization"] . "\n");
+
 
 ## wan status
 $client = new SoapClient(
