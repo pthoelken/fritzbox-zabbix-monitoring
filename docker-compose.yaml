@@ -10,3 +10,4 @@ services:
       - INTERVAL=30s
       - FRITZBOX_USER=zabbixmonitor
       - FRITZBOX_PASSWD=changeme
+      - ZABBIX_SENDER_DEBUG=True

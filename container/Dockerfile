@@ -7,7 +7,8 @@ ENV ZABBIX_SERVER \
     FRITZBOX_IP \
     INTERVAL \
     FRITZBOX_USER \
-    FRITZBOX_PASSWD
+    FRITZBOX_PASSWD \
+    ZABBIX_SENDER_DEBUG
 
 RUN apk --update --no-cache add \
     zabbix-agent \

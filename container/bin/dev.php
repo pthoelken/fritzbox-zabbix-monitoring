@@ -4,9 +4,25 @@ $hostname = $_ENV["FRITZBOX_HOSTNAME"];
 $fritz_user = $_ENV["FRITZBOX_USER"];
 $fritz_password = $_ENV["FRITZBOX_PASSWD"];
 
-# ---------------------------------------------------------------------------------------------------------------------------------
-# - Traffic Stats from WAN
-# ---------------------------------------------------------------------------------------------------------------------------------
+function calcAvg($listNumbers) {
+    $numbers = explode(',', $listNumbers);
+
+    $sum = 0;
+    $countBlocks = count($numbers);
+
+    foreach ($numbers as $block) {
+        $sum += array_sum(explode(' ', $block));
+    }
+
+    if ($countBlocks > 0) {
+        $avg = $sum / $countBlocks;
+        return $avg;
+    } else {
+        return "Keine Zahlen vorhanden.";
+    }
+}
+
+## traffic stats wam
 $client = new SoapClient(
     null,
     array(
@@ -23,9 +39,22 @@ print($hostname . " layer1UpstreamMaxBitRate " . $commonLinkProperties["NewLayer
 print($hostname . " layer1DownstreamMaxBitRate " . $commonLinkProperties["NewLayer1DownstreamMaxBitRate"] . "\n");
 print($hostname . " physicalLinkStatus " . $commonLinkProperties["NewPhysicalLinkStatus"] . "\n");
 
-# ---------------------------------------------------------------------------------------------------------------------------------
-# - Routers Informations: Internal IP Address List
-# ---------------------------------------------------------------------------------------------------------------------------------
+
+$client = new SoapClient(
+    null,
+    array(
+        'location' => "http://".$fritzbox_ip.":49000/upnp/control/wancommonifconfig1",
+        'uri' => "urn:dslforum-org:service:WANCommonInterfaceConfig:1",
+        'noroot' => True,
+        'login'      => $fritz_user,
+	    'password'   => $fritz_password
+    )
+);
+$commonLinkProperties = $client->GetCommonLinkProperties();
+print($hostname . " layer1DownstreamCurrentUtilization " . calcAvg($commonLinkProperties["NewX_AVM-DE_DownstreamCurrentUtilization"]) . "\n");
+print($hostname . " layer1UpstreamCurrentUtilization " . calcAvg($commonLinkProperties["NewX_AVM-DE_UpstreamCurrentUtilization"]) . "\n");
+
+# Routers informations
 $client = new SoapClient(
     null,
     array(
@@ -39,9 +68,7 @@ $client = new SoapClient(
 $RoutersIPList = $client->GetInfo();
 print($hostname . " ipAddressFromRouter " . $RoutersIPList["NewIPRouters"] . "\n");
 
-# ---------------------------------------------------------------------------------------------------------------------------------
-# - WAN Status
-# ---------------------------------------------------------------------------------------------------------------------------------
+## wan status
 $client = new SoapClient(
     null,
     array(
@@ -62,9 +89,7 @@ print($hostname . " uptime " . $status["NewUptime"] . "\n");
 print($hostname . " externalIPAddress " . $externalIPAddress . "\n");
 
 !$fritz_password  && exit(0);
-# ---------------------------------------------------------------------------------------------------------------------------------
-# - Router Informations: Software Version
-# ---------------------------------------------------------------------------------------------------------------------------------
+## software version
 $client = new SoapClient(
     null,
     array(
@@ -78,9 +103,7 @@ $client = new SoapClient(
 $info = $client->GetInfo();
 print($hostname . " softwareVersion " . $info['NewSoftwareVersion'] . "\n");
 
-# ---------------------------------------------------------------------------------------------------------------------------------
-# - Informations about connected WiFi Network Devices
-# ---------------------------------------------------------------------------------------------------------------------------------
+## get some informations about connected wifi devices
 $client = new SoapClient(
     null,
     array(
@@ -106,11 +129,8 @@ for ($i=0;$i<$wifi_device_count;$i++){
 
     array_push($macs, ["{#MAC}" => $mac]);
 }
-
-# ---------------------------------------------------------------------------------------------------------------------------------
-# - Discoverd WiFi Devices
-# ---------------------------------------------------------------------------------------------------------------------------------
+#send discover wifi devices
 print($hostname . " associatedDeviceDiscovery " . json_encode(["data" => $macs]) . "\n");
+#send wifi devices stats
 print($wifi_stats);
-
 ?>

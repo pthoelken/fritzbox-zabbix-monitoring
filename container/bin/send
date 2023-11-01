@@ -1,7 +1,13 @@
 #!/bin/ash
 
 while true; do
-	php status.php | zabbix_sender -vv -z $ZABBIX_SERVER -i -
+
+	if [ "$ZABBIX_SENDER_DEBUG" == "True" ]; then
+		php status.php | zabbix_sender -vv -z $ZABBIX_SERVER -i -
+	else
+		php status.php | zabbix_sender -z $ZABBIX_SERVER -i -
+	fi
+
 	sleep $INTERVAL &
 	wait $!
 done
