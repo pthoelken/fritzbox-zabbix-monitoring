@@ -1,4 +1,5 @@
-# Requirements and successfully tested
+# Zabbix Monitoring for your AVM Fritz!Box Devices
+## Requirements and successfully tested
 - Zabbix Server Version: 7
 - Zabbix Sender Version: 6.4.7
 
@@ -17,6 +18,9 @@ This template is in development with Zabbix Server version 7. Zabbix Server Vers
 3. ```docker build --no-cache -t fritzbox-zabbix-monitoring```
 
 For more information checkout the build file in this repo.
+
+## Feature Requests and Bugs or Questions
+- Please create a simple issue here https://github.com/pthoelken/fritzbox-zabbix-monitoring/issues
 
 ## Known Errors
 ### 'Hostname' required
