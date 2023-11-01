@@ -4,7 +4,9 @@ $hostname = $_ENV["FRITZBOX_HOSTNAME"];
 $fritz_user = $_ENV["FRITZBOX_USER"];
 $fritz_password = $_ENV["FRITZBOX_PASSWD"];
 
-## traffic stats wam
+# ---------------------------------------------------------------------------------------------------------------------------------
+# - Traffic Stats from WAN
+# ---------------------------------------------------------------------------------------------------------------------------------
 $client = new SoapClient(
     null,
     array(
@@ -20,10 +22,26 @@ print($hostname . " totalBytesReceived " . $addonInfos["NewTotalBytesReceived"] 
 print($hostname . " layer1UpstreamMaxBitRate " . $commonLinkProperties["NewLayer1UpstreamMaxBitRate"] . "\n");
 print($hostname . " layer1DownstreamMaxBitRate " . $commonLinkProperties["NewLayer1DownstreamMaxBitRate"] . "\n");
 print($hostname . " physicalLinkStatus " . $commonLinkProperties["NewPhysicalLinkStatus"] . "\n");
-# print($hostname . " layer1DownstreamCurrentUtilization " . $commonLinkProperties["NewLayer1DownstreamCurrentUtilization"] . "\n");
-# print($hostname . " layer1UpstreamCurrentUtilization " . $commonLinkProperties["NewLayer1UpstreamCurrentUtilization"] . "\n");
 
-## wan status
+# ---------------------------------------------------------------------------------------------------------------------------------
+# - Routers Informations: Internal IP Address List
+# ---------------------------------------------------------------------------------------------------------------------------------
+$client = new SoapClient(
+    null,
+    array(
+        'location' => "http://".$fritzbox_ip.":49000/upnp/control/lanhostconfigmgm",
+        'uri' => "urn:dslforum-org:service:LANHostConfigManagement:1",
+        'noroot' => True,
+        'login'      => $fritz_user,
+        'password'   => $fritz_password
+    )
+);
+$RoutersIPList = $client->GetInfo();
+print($hostname . " ipAddressFromRouter " . $RoutersIPList["NewIPRouters"] . "\n");
+
+# ---------------------------------------------------------------------------------------------------------------------------------
+# - WAN Status
+# ---------------------------------------------------------------------------------------------------------------------------------
 $client = new SoapClient(
     null,
     array(
@@ -35,12 +53,18 @@ $client = new SoapClient(
 $status = $client->GetStatusInfo();
 $externalIPAddress = $client->GetExternalIPAddress();
 
+if (empty($externalIPAddress)) {
+    $externalIPAddress = "not configured (check ipAddressFromRouter value)";
+}
+
 print($hostname . " connectionStatus " . $status["NewConnectionStatus"] . "\n");
 print($hostname . " uptime " . $status["NewUptime"] . "\n");
 print($hostname . " externalIPAddress " . $externalIPAddress . "\n");
 
 !$fritz_password  && exit(0);
-## software version
+# ---------------------------------------------------------------------------------------------------------------------------------
+# - Router Informations: Software Version
+# ---------------------------------------------------------------------------------------------------------------------------------
 $client = new SoapClient(
     null,
     array(
@@ -54,7 +78,9 @@ $client = new SoapClient(
 $info = $client->GetInfo();
 print($hostname . " softwareVersion " . $info['NewSoftwareVersion'] . "\n");
 
-## get some informations about connected wifi devices
+# ---------------------------------------------------------------------------------------------------------------------------------
+# - Informations about connected WiFi Network Devices
+# ---------------------------------------------------------------------------------------------------------------------------------
 $client = new SoapClient(
     null,
     array(
@@ -80,8 +106,11 @@ for ($i=0;$i<$wifi_device_count;$i++){
 
     array_push($macs, ["{#MAC}" => $mac]);
 }
-#send discover wifi devices
+
+# ---------------------------------------------------------------------------------------------------------------------------------
+# - Discoverd WiFi Devices
+# ---------------------------------------------------------------------------------------------------------------------------------
 print($hostname . " associatedDeviceDiscovery " . json_encode(["data" => $macs]) . "\n");
-#send wifi devices stats
 print($wifi_stats);
+
 ?>

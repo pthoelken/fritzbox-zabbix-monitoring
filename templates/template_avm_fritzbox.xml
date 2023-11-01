@@ -62,10 +62,47 @@
                     </tags>
                 </item>
                 <item>
+                    <uuid>5b5519767b204be5bae201b15d757dcc</uuid>
+                    <name>ipAddressFromRouter</name>
+                    <type>TRAP</type>
+                    <key>ipAddressFromRouter</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                </item>
+                <item>
+                    <uuid>261aae65c5704624968160dafe4597e8</uuid>
+                    <name>layer1DownstreamCurrentUtilization</name>
+                    <type>TRAP</type>
+                    <key>layer1DownstreamCurrentUtilization</key>
+                    <delay>0</delay>
+                    <units>Bit</units>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>status</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
                     <uuid>61c7d8eea5694c90982f66e239c19d5c</uuid>
                     <name>layer1DownstreamMaxBitRate</name>
                     <type>TRAP</type>
                     <key>layer1DownstreamMaxBitRate</key>
+                    <delay>0</delay>
+                    <units>Bit</units>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>status</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>9de8132c71a94ca2b07ca9439be12056</uuid>
+                    <name>layer1UpstreamCurrentUtilization</name>
+                    <type>TRAP</type>
+                    <key>layer1UpstreamCurrentUtilization</key>
                     <delay>0</delay>
                     <units>Bit</units>
                     <tags>
@@ -312,6 +349,29 @@
                     <item>
                         <host>Template AVM FritzBox Router</host>
                         <key>totalBytesSentRate</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <uuid>fb30d5bbb5584287a8a3ce989e80818a</uuid>
+            <name>Traffic Graph Layer 1 Utilization</name>
+            <graph_items>
+                <graph_item>
+                    <color>199C0D</color>
+                    <calc_fnc>ALL</calc_fnc>
+                    <item>
+                        <host>Template AVM FritzBox Router</host>
+                        <key>layer1DownstreamCurrentUtilization</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>F63100</color>
+                    <calc_fnc>ALL</calc_fnc>
+                    <item>
+                        <host>Template AVM FritzBox Router</host>
+                        <key>layer1UpstreamCurrentUtilization</key>
                     </item>
                 </graph_item>
             </graph_items>

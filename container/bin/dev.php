@@ -4,6 +4,24 @@ $hostname = $_ENV["FRITZBOX_HOSTNAME"];
 $fritz_user = $_ENV["FRITZBOX_USER"];
 $fritz_password = $_ENV["FRITZBOX_PASSWD"];
 
+function calcAvg($listNumbers) {
+    $numbers = explode(',', $listNumbers);
+
+    $sum = 0;
+    $countBlocks = count($numbers);
+
+    foreach ($numbers as $block) {
+        $sum += array_sum(explode(' ', $block));
+    }
+
+    if ($countBlocks > 0) {
+        $avg = $sum / $countBlocks;
+        return $avg;
+    } else {
+        return "Keine Zahlen vorhanden.";
+    }
+}
+
 ## traffic stats wam
 $client = new SoapClient(
     null,
@@ -28,14 +46,27 @@ $client = new SoapClient(
         'location' => "http://".$fritzbox_ip.":49000/upnp/control/wancommonifconfig1",
         'uri' => "urn:dslforum-org:service:WANCommonInterfaceConfig:1",
         'noroot' => True,
-    'login'      => $fritz_user,
-	'password'   => $fritz_password
+        'login'      => $fritz_user,
+	    'password'   => $fritz_password
     )
 );
 $commonLinkProperties = $client->GetCommonLinkProperties();
-print($hostname . " layer1DownstreamCurrentUtilization " . $commonLinkProperties["NewX_AVM-DE_DownstreamCurrentUtilization"] . "\n");
-print($hostname . " layer1UpstreamCurrentUtilization " . $commonLinkProperties["NewX_AVM-DE_UpstreamCurrentUtilization"] . "\n");
+print($hostname . " layer1DownstreamCurrentUtilization " . calcAvg($commonLinkProperties["NewX_AVM-DE_DownstreamCurrentUtilization"]) . "\n");
+print($hostname . " layer1UpstreamCurrentUtilization " . calcAvg($commonLinkProperties["NewX_AVM-DE_UpstreamCurrentUtilization"]) . "\n");
 
+# Routers informations
+$client = new SoapClient(
+    null,
+    array(
+        'location' => "http://".$fritzbox_ip.":49000/upnp/control/lanhostconfigmgm",
+        'uri' => "urn:dslforum-org:service:LANHostConfigManagement:1",
+        'noroot' => True,
+        'login'      => $fritz_user,
+        'password'   => $fritz_password
+    )
+);
+$RoutersIPList = $client->GetInfo();
+print($hostname . " ipAddressFromRouter " . $RoutersIPList["NewIPRouters"] . "\n");
 
 ## wan status
 $client = new SoapClient(
@@ -48,6 +79,10 @@ $client = new SoapClient(
 );
 $status = $client->GetStatusInfo();
 $externalIPAddress = $client->GetExternalIPAddress();
+
+if (empty($externalIPAddress)) {
+    $externalIPAddress = "not configured (check ipAddressFromRouter value)";
+}
 
 print($hostname . " connectionStatus " . $status["NewConnectionStatus"] . "\n");
 print($hostname . " uptime " . $status["NewUptime"] . "\n");

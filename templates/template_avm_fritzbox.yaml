@@ -40,10 +40,35 @@ zabbix_export:
           tags:
             - tag: Application
               value: status
+        - uuid: 5b5519767b204be5bae201b15d757dcc
+          name: ipAddressFromRouter
+          type: TRAP
+          key: ipAddressFromRouter
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+        - uuid: 261aae65c5704624968160dafe4597e8
+          name: layer1DownstreamCurrentUtilization
+          type: TRAP
+          key: layer1DownstreamCurrentUtilization
+          delay: '0'
+          units: Bit
+          tags:
+            - tag: Application
+              value: status
         - uuid: 61c7d8eea5694c90982f66e239c19d5c
           name: layer1DownstreamMaxBitRate
           type: TRAP
           key: layer1DownstreamMaxBitRate
+          delay: '0'
+          units: Bit
+          tags:
+            - tag: Application
+              value: status
+        - uuid: 9de8132c71a94ca2b07ca9439be12056
+          name: layer1UpstreamCurrentUtilization
+          type: TRAP
+          key: layer1UpstreamCurrentUtilization
           delay: '0'
           units: Bit
           tags:
@@ -205,3 +230,17 @@ zabbix_export:
           item:
             host: 'Template AVM FritzBox Router'
             key: totalBytesSentRate
+    - uuid: fb30d5bbb5584287a8a3ce989e80818a
+      name: 'Traffic Graph Layer 1 Utilization'
+      graph_items:
+        - color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Template AVM FritzBox Router'
+            key: layer1DownstreamCurrentUtilization
+        - sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Template AVM FritzBox Router'
+            key: layer1UpstreamCurrentUtilization
