@@ -1,13 +1,16 @@
 version: '3.2'
 services:
-  fritzbox-zabbix-monitoring:
+  monitor:
     image: pthoelken/fritzbox-zabbix-monitoring:latest
     restart: always
     environment:
       - ZABBIX_SERVER=000.000.000.000
+      - ZABBIX_SERVER_PORT=
+      - TLS_PSK_IDENTITY=
+      - TLS_PSK=
+      - INTERVAL=30s
       - FRITZBOX_HOSTNAME=fritz.box
       - FRITZBOX_IP=000.000.000.000
-      - INTERVAL=30s
       - FRITZBOX_USER=zabbixmonitor
       - FRITZBOX_PASSWD=changeme
-      - ZABBIX_SENDER_DEBUG=True
+      - ZABBIX_SENDER_DEBUG=False

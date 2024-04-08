@@ -3,14 +3,30 @@
 - Zabbix Server Version: 7
 - Zabbix Sender Version: 6.4.7
 
-This template is in development with Zabbix Server version 7. Zabbix Server Version 6 with the templates from here may not working properly.
+This template is in development with Zabbix Server version 7. To get it working under Zabbix Server Version 6 just change the `version` key at the beginning. However they may not work properly.
 
 ## Setup
-1. Copy the content from the docker-compose.yml file to your local docker-compose.yml file and fillout the environment variables with yours.
-2. Download the Zabbix template file from [template_fritz.box.xml](https://github.com/pthoelken/fritzbox-zabbix-monitoring/blob/master/templates) and import it to your Zabbix Monitoring system (if you update, delete the old tempalte first)
-3. Create a host in zabbix with the same hostname from docker-compose.yml (```FRITZBOX_HOSTNAME```)
-4. Start your docker-compose file with ```docker-compose up -d```
-5. You can check the container with ```docker-compose logs``` into the same directory
+1. Create a user for monitoring (with settings permissions) in your FritzBox
+1. Copy the content from the docker-compose.yml file to your local `docker-compose.yaml`` file and fillout the environment variables. You can leave some blank to use defaults (see below).
+1. Download the Zabbix template file from [template_fritz.box.xml](https://github.com/pthoelken/fritzbox-zabbix-monitoring/blob/master/templates) and import it to your Zabbix Monitoring system (if you update, delete the old tempalte first)
+1. Create a host in zabbix with the same hostname from docker-compose.yml (```FRITZBOX_HOSTNAME```)
+1. Start your docker-compose file with ```docker-compose up -d```
+1. You can check the container with ```docker-compose logs``` into the same directory
+
+### Environment Variables
+
+|  Key  |  Default  |  Comment  |
+| ----- | --------- | --------- |
+|  ZABBIX_SERVER  |  -  |  IP address of your Zabbix server  |
+|  ZABBIX_SERVER_PORT  |  10050  |  Custom port of your Zabbix server  |
+|  TLS_PSK_IDENTITY  |  (not used)  |  ID of the pre-shared-key to be used  |
+|  TLS_PSK_  |  (not used)  |  Secret of the pre-shared-key  |
+|  INTERVAL  |  -  |  Check intervall  |
+|  FRITZBOX_HOSTNAME  |  -  |  Hostname of your FritzBox at the Zabbix Server  |
+|  FRITZBOX_IP  |  -  |  IP address of your FritzBox where it could be reached from this check service  |
+|  FRITZBOX_USER  |  -  |  User in your FritzBox for this check service  |
+|  FRITZBOX_PASSWD  |  -  |  Password in your FritzBox for this check service  |
+|  ZABBIX_SENDER_DEBUG  |  False  |  Switch to enable verbose logging  |
 
 ## For builders and developers only
 1. ```git clone XX```
