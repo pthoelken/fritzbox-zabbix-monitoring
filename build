@@ -2,8 +2,8 @@
 
 cd container
 
-apt update
-apt install -y dos2unix
+sudo apt update
+sudo apt install -y dos2unix
 
 dos2unix bin/*
 
