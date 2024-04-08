@@ -1,4 +1,4 @@
-FROM php:8.2-cli-alpine3.18
+FROM php:8.3-cli-alpine3.19
 
 WORKDIR /app
 
@@ -15,8 +15,7 @@ RUN apk --update --no-cache add \
     zabbix-utils \
     libxml2-dev 
     
-RUN apk upgrade && \
-    apk upgrade
+RUN apt update && apk upgrade
 
 RUN docker-php-ext-install soap
 
