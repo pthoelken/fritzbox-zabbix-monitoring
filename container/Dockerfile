@@ -1,4 +1,4 @@
-FROM php:8.2-cli-alpine3.19 as builder
+FROM php:8.2-cli-alpine3.19
 
 WORKDIR /app
 
@@ -22,6 +22,4 @@ RUN rm -rf /var/cache/apk/*
 COPY bin/* /app/
 RUN chmod +x -R /app
 
-FROM scratch
-COPY --from=builder /app/ /app/
 CMD [ "ash", "-c", "/app/send" ]
