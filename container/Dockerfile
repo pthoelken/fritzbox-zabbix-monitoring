@@ -1,4 +1,15 @@
-FROM php:8.3-cli-alpine3.19
+FROM php:8.3-cli-alpine3.19 as buildimage
+
+RUN apk --update --no-cache add \
+    zabbix-agent \
+    zabbix-utils \
+    libxml2-dev 
+
+RUN apk upgrade --no-cache
+RUN rm -rf /var/cache/apk/*
+
+FROM scratch
+COPY --from=buildimage
 
 WORKDIR /app
 
@@ -10,16 +21,7 @@ ENV ZABBIX_SERVER \
     FRITZBOX_PASSWD \
     ZABBIX_SENDER_DEBUG
 
-RUN apk --update --no-cache add \
-    zabbix-agent \
-    zabbix-utils \
-    libxml2-dev 
-    
-RUN apt update && apk upgrade
-
 RUN docker-php-ext-install soap
-
-RUN rm -rf /var/cache/apk/*
 
 COPY bin/* /app/
 RUN chmod +x -R /app
