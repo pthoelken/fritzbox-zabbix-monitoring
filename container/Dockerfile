@@ -9,7 +9,7 @@ RUN apk upgrade --no-cache
 RUN rm -rf /var/cache/apk/*
 
 FROM scratch
-COPY --from=buildimage
+COPY --from=buildimage / /
 
 WORKDIR /app
 
