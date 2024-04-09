@@ -2,11 +2,34 @@
 
 cd container
 
-sudo apt update
-sudo apt install -y dos2unix
+dos2unix bin/* 
 
-dos2unix bin/*
+function buildGitHub() {
+    sudo apt update
+    sudo apt install -y dos2unix
+    echo $dockerhubkey | docker login --username $dockerusername --password-stdin
+    docker buildx create --use --name builder --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6
+    docker buildx build -t pthoelken/fritzbox-zabbix-monitoring:latest --push --force-rm --no-cache --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6 -f Dockerfile .
+}
 
-echo $dockerhubkey | docker login --username $dockerusername --password-stdin
-docker buildx create --use --name builder --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6
-docker buildx build -t pthoelken/fritzbox-zabbix-monitoring:latest --push --force-rm --no-cache --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6 -f Dockerfile .
+function buildLocal() {
+    docker image prune -a -f
+    docker buildx create --use --name builder --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6
+    docker buildx build -t pthoelken/fritzbox-zabbix-monitoring:$1 --push --force-rm --no-cache --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6 -f Dockerfile .
+    docker buildx rm builder
+}
+
+case "$1" in
+    "--local")
+        buildLocal $2
+        ;;
+    "--github")
+        buildGitHub
+        ;;
+    *)
+        echo "Choose between $0 --local or --github to run this application."
+        exit 1
+        ;;
+esac
+
+exit 0

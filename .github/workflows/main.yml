@@ -18,4 +18,4 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Build and publish image
-      run: chmod +x build && ./build
+      run: chmod +x build && ./build --github
