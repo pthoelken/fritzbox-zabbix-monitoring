@@ -25,8 +25,9 @@
                     <type>TRAP</type>
                     <key>connectionStatus</key>
                     <delay>0</delay>
-                    <trends>0</trends>
+                    <history>90d</history>
                     <value_type>TEXT</value_type>
+                    <trends>0</trends>
                     <tags>
                         <tag>
                             <tag>Application</tag>
@@ -52,8 +53,9 @@
                     <type>TRAP</type>
                     <key>externalIPAddress</key>
                     <delay>0</delay>
-                    <trends>0</trends>
+                    <history>90d</history>
                     <value_type>TEXT</value_type>
+                    <trends>0</trends>
                     <tags>
                         <tag>
                             <tag>Application</tag>
@@ -67,8 +69,9 @@
                     <type>TRAP</type>
                     <key>ipAddressFromRouter</key>
                     <delay>0</delay>
-                    <trends>0</trends>
+                    <history>90d</history>
                     <value_type>TEXT</value_type>
+                    <trends>0</trends>
                 </item>
                 <item>
                     <uuid>261aae65c5704624968160dafe4597e8</uuid>
@@ -76,6 +79,7 @@
                     <type>TRAP</type>
                     <key>layer1DownstreamCurrentUtilization</key>
                     <delay>0</delay>
+                    <history>90d</history>
                     <units>Bit</units>
                     <tags>
                         <tag>
@@ -90,6 +94,7 @@
                     <type>TRAP</type>
                     <key>layer1DownstreamMaxBitRate</key>
                     <delay>0</delay>
+                    <history>90d</history>
                     <units>Bit</units>
                     <tags>
                         <tag>
@@ -104,6 +109,7 @@
                     <type>TRAP</type>
                     <key>layer1UpstreamCurrentUtilization</key>
                     <delay>0</delay>
+                    <history>90d</history>
                     <units>Bit</units>
                     <tags>
                         <tag>
@@ -118,6 +124,7 @@
                     <type>TRAP</type>
                     <key>layer1UpstreamMaxBitRate</key>
                     <delay>0</delay>
+                    <history>90d</history>
                     <units>Bit</units>
                     <tags>
                         <tag>
@@ -132,8 +139,9 @@
                     <type>TRAP</type>
                     <key>physicalLinkStatus</key>
                     <delay>0</delay>
-                    <trends>0</trends>
+                    <history>90d</history>
                     <value_type>TEXT</value_type>
+                    <trends>0</trends>
                     <tags>
                         <tag>
                             <tag>Application</tag>
@@ -159,8 +167,9 @@
                     <type>TRAP</type>
                     <key>softwareVersion</key>
                     <delay>0</delay>
-                    <trends>0</trends>
+                    <history>90d</history>
                     <value_type>TEXT</value_type>
+                    <trends>0</trends>
                     <tags>
                         <tag>
                             <tag>Application</tag>
@@ -184,6 +193,7 @@
                     <type>TRAP</type>
                     <key>totalBytesReceived</key>
                     <delay>0</delay>
+                    <history>90d</history>
                     <units>Byte</units>
                     <tags>
                         <tag>
@@ -198,6 +208,7 @@
                     <type>CALCULATED</type>
                     <key>totalBytesReceivedRate</key>
                     <delay>60s</delay>
+                    <history>90d</history>
                     <value_type>FLOAT</value_type>
                     <units>Byte/s</units>
                     <params>(max(//totalBytesReceived,3m)-min(//totalBytesReceived,3m)) / 120</params>
@@ -214,6 +225,7 @@
                     <type>TRAP</type>
                     <key>totalBytesSent</key>
                     <delay>0</delay>
+                    <history>90d</history>
                     <units>Byte</units>
                     <tags>
                         <tag>
@@ -228,6 +240,7 @@
                     <type>CALCULATED</type>
                     <key>totalBytesSentRate</key>
                     <delay>60s</delay>
+                    <history>90d</history>
                     <units>Byte/s</units>
                     <params>(max(//totalBytesSent,3m)-min(//totalBytesSent,3m)) / 120</params>
                     <tags>
@@ -243,6 +256,7 @@
                     <type>TRAP</type>
                     <key>uptime</key>
                     <delay>0</delay>
+                    <history>90d</history>
                     <units>s</units>
                     <tags>
                         <tag>
@@ -270,6 +284,8 @@
                     <type>TRAP</type>
                     <key>associatedDeviceDiscovery</key>
                     <delay>0</delay>
+                    <lifetime>30d</lifetime>
+                    <enabled_lifetime_type>DISABLE_NEVER</enabled_lifetime_type>
                     <item_prototypes>
                         <item_prototype>
                             <uuid>c53c266f25464ad1a851caa0dfde9817</uuid>
@@ -277,6 +293,7 @@
                             <type>TRAP</type>
                             <key>associatedDevice[{#MAC},authState]</key>
                             <delay>0</delay>
+                            <history>90d</history>
                             <tags>
                                 <tag>
                                     <tag>Application</tag>
@@ -290,8 +307,9 @@
                             <type>TRAP</type>
                             <key>associatedDevice[{#MAC},ipAddress]</key>
                             <delay>0</delay>
-                            <trends>0</trends>
+                            <history>90d</history>
                             <value_type>TEXT</value_type>
+                            <trends>0</trends>
                             <tags>
                                 <tag>
                                     <tag>Application</tag>
@@ -305,6 +323,7 @@
                             <type>TRAP</type>
                             <key>associatedDevice[{#MAC},signalStrength]</key>
                             <delay>0</delay>
+                            <history>90d</history>
                             <tags>
                                 <tag>
                                     <tag>Application</tag>
@@ -318,6 +337,7 @@
                             <type>TRAP</type>
                             <key>associatedDevice[{#MAC},speed]</key>
                             <delay>0</delay>
+                            <history>90d</history>
                             <tags>
                                 <tag>
                                     <tag>Application</tag>
