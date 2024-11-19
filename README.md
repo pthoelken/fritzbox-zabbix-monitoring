@@ -7,11 +7,14 @@ This template is in development with Zabbix Server version 7. To get it working 
 
 ## Setup
 1. Create a user for monitoring (with settings permissions) in your FritzBox
-1. Copy the content from the docker-compose.yml file to your local `docker-compose.yaml`` file and fillout the environment variables. You can leave some blank to use defaults (see below).
-1. Download the Zabbix template file from [template_fritz.box.xml](https://github.com/pthoelken/fritzbox-zabbix-monitoring/blob/master/templates) and import it to your Zabbix Monitoring system (if you update, delete the old tempalte first)
-1. Create a host in zabbix with the same hostname from docker-compose.yml (```FRITZBOX_HOSTNAME```)
-1. Start your docker-compose file with ```docker-compose up -d```
-1. You can check the container with ```docker-compose logs``` into the same directory
+2. Copy the content from the docker-compose.yml file to your local `docker-compose.yaml`` file and fillout the environment variables. You can leave some blank to use defaults (see below).
+3. Download the Zabbix template file from [template_fritz.box.xml](https://github.com/pthoelken/fritzbox-zabbix-monitoring/blob/master/templates) and import it to your Zabbix Monitoring system (if you update, delete the old tempalte first)
+4. Create a host in zabbix with the same hostname from docker-compose.yml (```FRITZBOX_HOSTNAME```)
+5. Start your docker-compose file with ```docker-compose up -d```
+6. You can check the container with ```docker-compose logs``` into the same directory
+
+## Information
+- Please make sure that your passwords do not contain a dollar sign.
 
 ### Environment Variables
 
