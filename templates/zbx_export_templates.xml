@@ -64,6 +64,38 @@
                     </tags>
                 </item>
                 <item>
+                    <uuid>3ea0612ed9cc4b5f88521f04dd0e8012</uuid>
+                    <name>externalIPV6Address</name>
+                    <type>TRAP</type>
+                    <key>externalIPV6Address</key>
+                    <delay>0</delay>
+                    <history>90d</history>
+                    <value_type>TEXT</value_type>
+                    <trends>0</trends>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>status</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>570960e38f904689b3f41948a6747ebd</uuid>
+                    <name>externalIPV6Prefix</name>
+                    <type>TRAP</type>
+                    <key>externalIPV6Prefix</key>
+                    <delay>0</delay>
+                    <history>90d</history>
+                    <value_type>TEXT</value_type>
+                    <trends>0</trends>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>status</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
                     <uuid>5b5519767b204be5bae201b15d757dcc</uuid>
                     <name>ipAddressFromRouter</name>
                     <type>TRAP</type>
