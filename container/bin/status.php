@@ -17,8 +17,10 @@ $client = new SoapClient(
 );
 $addonInfos = $client->GetAddonInfos();  
 $commonLinkProperties = $client->GetCommonLinkProperties();
-print($hostname . " totalBytesSent " . $addonInfos["NewTotalBytesSent"] . "\n");
-print($hostname . " totalBytesReceived " . $addonInfos["NewTotalBytesReceived"] . "\n");
+// print($hostname . " totalBytesSent " . $addonInfos["NewTotalBytesSent"] . "\n");
+// print($hostname . " totalBytesReceived " . $addonInfos["NewTotalBytesReceived"] . "\n");
+print($hostname . " totalBytesSent " . $addonInfos["NewX_AVM_DE_TotalBytesSent64"] . "\n");
+print($hostname . " totalBytesReceived " . $addonInfos["NewX_AVM_DE_TotalBytesReceived64"] . "\n");
 print($hostname . " layer1UpstreamMaxBitRate " . $commonLinkProperties["NewLayer1UpstreamMaxBitRate"] . "\n");
 print($hostname . " layer1DownstreamMaxBitRate " . $commonLinkProperties["NewLayer1DownstreamMaxBitRate"] . "\n");
 print($hostname . " physicalLinkStatus " . $commonLinkProperties["NewPhysicalLinkStatus"] . "\n");
@@ -52,16 +54,31 @@ $client = new SoapClient(
 );
 $status = $client->GetStatusInfo();
 $externalIPAddress = $client->GetExternalIPAddress();
+$externalIPV6Address = $client->X_AVM_DE_GetExternalIPv6Address();
+$externalIPV6Prefix = $client->X_AVM_DE_GetIPv6Prefix();
 
-if (empty($externalIPAddress)) {
-    $externalIPAddress = "not configured (check ipAddressFromRouter value)";
+function extractFirstValue($value) {
+    if (is_array($value)) {
+        $value = implode(", ", $value);
+    }
+    return trim(explode(",", $value)[0]);
 }
+
+$externalIPV6AddressOnly = extractFirstValue($externalIPV6Address);
+$externalIPV6PrefixOnly = extractFirstValue($externalIPV6Prefix);
+
+$externalIPAddress = !empty($externalIPAddress) ? $externalIPAddress : "not configured (check externalIPAddress value)";
+$externalIPV6AddressOnly = !empty($externalIPV6AddressOnly) ? $externalIPV6AddressOnly : "not configured (check externalIPV6Address value)";
+$externalIPV6PrefixOnly = !empty($externalIPV6PrefixOnly) ? $externalIPV6PrefixOnly : "not configured (check externalIPV6Prefix value)";
 
 print($hostname . " connectionStatus " . $status["NewConnectionStatus"] . "\n");
 print($hostname . " uptime " . $status["NewUptime"] . "\n");
 print($hostname . " externalIPAddress " . $externalIPAddress . "\n");
+print($hostname . " externalIPV6Address " . $externalIPV6AddressOnly . "\n");
+print($hostname . " externalIPV6Prefix " . $externalIPV6PrefixOnly . "\n");
 
-!$fritz_password  && exit(0);
+!$fritz_password && exit(0);
+
 # ---------------------------------------------------------------------------------------------------------------------------------
 # - Router Informations: Software Version
 # ---------------------------------------------------------------------------------------------------------------------------------
