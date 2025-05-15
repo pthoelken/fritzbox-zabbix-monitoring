@@ -21,7 +21,7 @@ This template is in development with Zabbix Server version 7. To get it working 
 |  Key  |  Default  |  Comment  |
 | ----- | --------- | --------- |
 |  ZABBIX_SERVER  |  -  |  IP address of your Zabbix server  |
-|  ZABBIX_SERVER_PORT  |  10050  |  Custom port of your Zabbix server  |
+|  ZABBIX_SERVER_PORT  |  10051  |  Custom port of your Zabbix server  |
 |  TLS_PSK_IDENTITY  |  (not used)  |  ID of the pre-shared-key to be used  |
 |  TLS_PSK_  |  (not used)  |  Secret of the pre-shared-key  |
 |  INTERVAL  |  -  |  Check intervall  |
