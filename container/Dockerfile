@@ -1,20 +1,20 @@
-FROM php:8.4.5-alpine3.21
+FROM php:8.5-rc-cli-alpine3.22
 
 WORKDIR /app
 
-ENV ZABBIX_SERVER \
-    FRITZBOX_HOSTNAME \
-    FRITZBOX_IP \
-    INTERVAL \
-    FRITZBOX_USER \
-    FRITZBOX_PASSWD \
-    ZABBIX_SENDER_DEBUG
+ENV ZABBIX_SERVER="" \
+    FRITZBOX_HOSTNAME="" \
+    FRITZBOX_IP="" \
+    INTERVAL="" \
+    FRITZBOX_USER="" \
+    FRITZBOX_PASSWD="" \
+    ZABBIX_SENDER_DEBUG=""
 
 RUN apk upgrade --no-cache && apk --update --no-cache add zabbix-utils
 
 RUN apk add --no-cache --virtual .build-deps libxml2-dev && \
     docker-php-ext-install soap && \
-    apk del .build-deps && \
+    apk del .build-deps libxml2-dev && \
     docker-php-source delete
 
 RUN rm -rf /var/cache/apk/* /tmp/* /var/tmp/* \
