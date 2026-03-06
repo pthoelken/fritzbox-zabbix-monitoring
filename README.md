@@ -73,6 +73,9 @@ All thresholds are configurable via template macros.
 - Permissions: enable **Settings** (Einstellungen)
 - No dollar signs (`$`) in the password
 
+> **Important:** UPnP must be enabled on the Fritz!Box — otherwise TR-064 cannot retrieve all metrics and errors will appear in the console.
+> Enable it under **Home Network > Network > General** → "Allow access for applications" (Zugriff für Anwendungen erlauben).
+
 ### 2. Activate the Callmonitor (optional)
 
 Pick up a DECT phone connected to your Fritz!Box and dial:
@@ -162,6 +165,8 @@ chmod +x build
 ```
 
 ## Troubleshooting
+
+**TR-064 errors / metrics missing**: UPnP may be disabled. Enable "Allow access for applications" under **Home Network > Network > General** (Zugriff für Anwendungen erlauben).
 
 **"Hostname required" error**: Remove quotation marks from environment values.
 

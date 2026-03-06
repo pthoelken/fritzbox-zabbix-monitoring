@@ -69,6 +69,19 @@ log = logging.getLogger("fritzbox-monitor")
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# Detect UPnP-disabled errors from fritzconnection and add a helpful hint
+class _UpnpHintFilter(logging.Filter):
+    def filter(self, record):
+        if "igddesc.xml" in record.getMessage():
+            logging.getLogger("fritzbox-monitor").warning(
+                "TR-064: Cannot retrieve igddesc.xml — UPnP may be disabled on the Fritz!Box. "
+                "Enable 'Allow access for applications' (Zugriff für Anwendungen erlauben) "
+                "under Home Network > Network > General."
+            )
+        return True
+
+logging.getLogger("fritzconnection").addFilter(_UpnpHintFilter())
+
 
 def parse_interval(s):
     s = s.strip().lower()
