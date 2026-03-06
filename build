@@ -3,7 +3,7 @@ set -e
 IMAGE_NAME="pthoelken/fritzbox-zabbix-monitoring"
 VERSION="${1:-latest}"
 echo "Building ${IMAGE_NAME}:${VERSION} ..."
-cd "$(dirname "$0")/container"
+cd "$(dirname "$0")"
 docker build --no-cache -t "${IMAGE_NAME}:${VERSION}" .
 echo ""
 echo "Build complete: ${IMAGE_NAME}:${VERSION}"

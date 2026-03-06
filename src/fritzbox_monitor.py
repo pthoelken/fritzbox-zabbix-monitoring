@@ -97,9 +97,6 @@ def collect_device_info(fc):
         m["fritzbox.device.firmware"] = r.get("NewSoftwareVersion", "")
         m["fritzbox.device.serial"] = r.get("NewSerialNumber", "")
         m["fritzbox.device.uptime"] = r.get("NewUpTime", 0)
-        dl = r.get("NewDeviceLog", "")
-        if dl:
-            m["fritzbox.device.log"] = "\n".join(dl.strip().split("\n")[:10])
     r = safe_call(fc, "DeviceInfo1", "GetSecurityPort")
     if r:
         m["fritzbox.device.security_port"] = r.get("NewSecurityPort", 0)
@@ -646,9 +643,14 @@ def send_to_zabbix(metrics):
     for k, v in metrics.items():
         if v is None: continue
         if isinstance(v, bool): v = 1 if v else 0
+        v = str(v).replace("\n", " | ").replace("\r", "").replace("\t", " ").strip()
+        if not v: continue
         lines.append(f"{FRITZBOX_HOSTNAME} {k} {v}")
     if not lines: return False
     log.info("Sending %d metrics to Zabbix %s:%s", len(lines), ZABBIX_SERVER, ZABBIX_SERVER_PORT)
+    if DEBUG:
+        for line in lines:
+            log.debug("  >> %s", line)
 
     with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
         f.write("\n".join(lines) + "\n")
@@ -659,6 +661,9 @@ def send_to_zabbix(metrics):
             cmd += ["--tls-connect","psk","--tls-psk-identity",TLS_PSK_IDENTITY,"--tls-psk",TLS_PSK]
         if DEBUG: cmd.append("-vv")
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        if DEBUG and (r.stdout.strip() or r.stderr.strip()):
+            for line in (r.stdout + r.stderr).splitlines():
+                log.debug("  zabbix_sender: %s", line)
         if r.returncode == 0:
             log.info("Zabbix sender: %s", r.stdout.strip())
             return True
