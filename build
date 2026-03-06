@@ -1,40 +1,11 @@
-#!/bin/bash -e
-
-cd container
-
-function preperation() {
-    sudo apt update
-    sudo apt install -y dos2unix
-    dos2unix bin/*
-}
-
-function buildGitHub() {
-    echo $dockerhubkey | docker login --username $dockerusername --password-stdin
-    docker buildx create --use --name builder --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6
-    docker buildx build -t pthoelken/fritzbox-zabbix-monitoring:latest --push --force-rm --no-cache --progress=plain --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6 -f Dockerfile .
-}
-
-function buildLocal() {
-    docker image prune -a -f
-    docker buildx rm builder
-    docker buildx create --use --name builder --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6
-    docker buildx build -t pthoelken/fritzbox-zabbix-monitoring:$1 --push --force-rm --no-cache --platform linux/amd64,linux/arm/v7,linux/arm64/v8,linux/arm/v6 -f Dockerfile .
-    docker buildx rm builder
-}
-
-preperation
-
-case "$1" in
-    "--local")
-        buildLocal $2
-        ;;
-    "--github")
-        buildGitHub
-        ;;
-    *)
-        echo "Choose between $0 --local or --github to run this application."
-        exit 1
-        ;;
-esac
-
-exit 0
+#!/bin/bash
+set -e
+IMAGE_NAME="pthoelken/fritzbox-zabbix-monitoring"
+VERSION="${1:-latest}"
+echo "Building ${IMAGE_NAME}:${VERSION} ..."
+cd "$(dirname "$0")/container"
+docker build --no-cache -t "${IMAGE_NAME}:${VERSION}" .
+echo ""
+echo "Build complete: ${IMAGE_NAME}:${VERSION}"
+echo "To push:  docker push ${IMAGE_NAME}:${VERSION}"
+echo "To run:   docker compose up -d"
