@@ -8,7 +8,7 @@ Comprehensive monitoring of AVM Fritz!Box routers using **three interfaces**, se
 | **LUA** (data.lua) | CPU temp, CPU load, RAM, traffic stats, per-device RSSI | Requires web login (PBKDF2 auth) |
 | **Callmonitor** (TCP 1012) | Incoming/outgoing/missed calls, active calls | Dial `#96*5*` on a DECT phone to activate |
 
-## What changed (v2.1)
+## What changed (v2)
 
 - **Rewritten from PHP to Python** using `fritzconnection` + `requests`
 - **Three data sources** instead of just TR-064
@@ -111,7 +111,7 @@ docker compose logs -f
 Expected output:
 
 ```
-FritzBox Zabbix Monitor v2.1 (interval=60s)
+FritzBox Zabbix Monitor v2 (interval=60s)
 Features: TR-064=yes LUA=True Callmonitor=False
 TR-064: Connected to FRITZ!Box 7590 (FritzOS 7.57)
 LUA: Authenticated (SID=a3f2e1d0...)
@@ -158,7 +158,7 @@ git clone https://github.com/pthoelken/fritzbox-zabbix-monitoring.git
 cd fritzbox-zabbix-monitoring
 chmod +x build
 ./build          # :latest
-./build v2.1.0   # custom tag
+./build v2.0   # custom tag
 ```
 
 ## Troubleshooting

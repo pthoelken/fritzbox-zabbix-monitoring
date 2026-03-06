@@ -2,10 +2,10 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [main]
+    branches: [v2]
     tags: ['v*']
   pull_request:
-    branches: [main]
+    branches: [v2]
 
 env:
   IMAGE_NAME: pthoelken/fritzbox-zabbix-monitoring
