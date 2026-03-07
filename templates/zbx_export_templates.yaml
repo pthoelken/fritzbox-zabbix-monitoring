@@ -833,6 +833,756 @@ zabbix_export:
           tags:
             - tag: component
               value: wlan
+        - uuid: dc000001e5f64abc8def000000000001
+          name: 'DSL: ATUC CRC errors'
+          type: TRAP
+          key: fritzbox.dsl.atuc_crc_errors
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000002e5f64abc8def000000000002
+          name: 'DSL: ATUC FEC errors'
+          type: TRAP
+          key: fritzbox.dsl.atuc_fec_errors
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000003e5f64abc8def000000000003
+          name: 'DSL: ATUC HEC errors'
+          type: TRAP
+          key: fritzbox.dsl.atuc_hec_errors
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000004e5f64abc8def000000000004
+          name: 'DSL: Downstream max rate'
+          type: TRAP
+          key: fritzbox.dsl.downstream_max_rate
+          units: kbps
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000005e5f64abc8def000000000005
+          name: 'DSL: Downstream power'
+          type: TRAP
+          key: fritzbox.dsl.downstream_power
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000006e5f64abc8def000000000006
+          name: 'DSL: HEC errors (near)'
+          type: TRAP
+          key: fritzbox.dsl.hec_errors
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000007e5f64abc8def000000000007
+          name: 'DSL: Link status'
+          type: TRAP
+          key: fritzbox.dsl.link_status
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000008e5f64abc8def000000000008
+          name: 'DSL: Link type'
+          type: TRAP
+          key: fritzbox.dsl.link_type
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000009e5f64abc8def000000000009
+          name: 'DSL: Upstream max rate'
+          type: TRAP
+          key: fritzbox.dsl.upstream_max_rate
+          units: kbps
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc00000ae5f64abc8def00000000000a
+          name: 'DSL: Upstream power'
+          type: TRAP
+          key: fritzbox.dsl.upstream_power
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc00000be5f64abc8def00000000000b
+          name: 'DSL Detail: Downstream attenuation'
+          type: TRAP
+          key: fritzbox.dsl_detail.ds.attn
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc00000ce5f64abc8def00000000000c
+          name: 'DSL Detail: Downstream capacity'
+          type: TRAP
+          key: fritzbox.dsl_detail.ds.capacity
+          units: kbps
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc00000de5f64abc8def00000000000d
+          name: 'DSL Detail: Downstream CRC/min'
+          type: TRAP
+          key: fritzbox.dsl_detail.ds.crcPerMin
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc00000ee5f64abc8def00000000000e
+          name: 'DSL Detail: Downstream error seconds'
+          type: TRAP
+          key: fritzbox.dsl_detail.ds.errSeconds
+          units: s
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc00000fe5f64abc8def00000000000f
+          name: 'DSL Detail: Downstream loss of frame'
+          type: TRAP
+          key: fritzbox.dsl_detail.ds.lossOfFrame
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc000010e5f64abc8def000000000010
+          name: 'DSL Detail: Downstream loss of signal'
+          type: TRAP
+          key: fritzbox.dsl_detail.ds.lossOfSignal
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc000011e5f64abc8def000000000011
+          name: 'DSL Detail: Downstream severe error seconds'
+          type: TRAP
+          key: fritzbox.dsl_detail.ds.sevErrSeconds
+          units: s
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc000012e5f64abc8def000000000012
+          name: 'DSL Detail: Downstream SNR'
+          type: TRAP
+          key: fritzbox.dsl_detail.ds.snr
+          units: dB
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc000013e5f64abc8def000000000013
+          name: 'DSL Detail: Upstream attenuation'
+          type: TRAP
+          key: fritzbox.dsl_detail.us.attn
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc000014e5f64abc8def000000000014
+          name: 'DSL Detail: Upstream capacity'
+          type: TRAP
+          key: fritzbox.dsl_detail.us.capacity
+          units: kbps
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc000015e5f64abc8def000000000015
+          name: 'DSL Detail: Upstream CRC/min'
+          type: TRAP
+          key: fritzbox.dsl_detail.us.crcPerMin
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc000016e5f64abc8def000000000016
+          name: 'DSL Detail: Upstream error seconds'
+          type: TRAP
+          key: fritzbox.dsl_detail.us.errSeconds
+          units: s
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc000017e5f64abc8def000000000017
+          name: 'DSL Detail: Upstream loss of frame'
+          type: TRAP
+          key: fritzbox.dsl_detail.us.lossOfFrame
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc000018e5f64abc8def000000000018
+          name: 'DSL Detail: Upstream loss of signal'
+          type: TRAP
+          key: fritzbox.dsl_detail.us.lossOfSignal
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc000019e5f64abc8def000000000019
+          name: 'DSL Detail: Upstream severe error seconds'
+          type: TRAP
+          key: fritzbox.dsl_detail.us.sevErrSeconds
+          units: s
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc00001ae5f64abc8def00000000001a
+          name: 'DSL Detail: Upstream SNR'
+          type: TRAP
+          key: fritzbox.dsl_detail.us.snr
+          units: dB
+          tags:
+            - tag: component
+              value: dsl
+            - tag: source
+              value: lua
+        - uuid: dc00001be5f64abc8def00000000001b
+          name: 'Device: Security port'
+          type: TRAP
+          key: fritzbox.device.security_port
+          tags:
+            - tag: component
+              value: device
+        - uuid: dc00001ce5f64abc8def00000000001c
+          name: 'LAN: Host count'
+          type: TRAP
+          key: fritzbox.lan.host_count
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc00001de5f64abc8def00000000001d
+          name: 'LAN: ETH1 bytes received'
+          type: TRAP
+          key: fritzbox.lan.eth1.bytes_received
+          units: B
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc00001ee5f64abc8def00000000001e
+          name: 'LAN: ETH1 bytes sent'
+          type: TRAP
+          key: fritzbox.lan.eth1.bytes_sent
+          units: B
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc00001fe5f64abc8def00000000001f
+          name: 'LAN: ETH1 packets received'
+          type: TRAP
+          key: fritzbox.lan.eth1.packets_received
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc000020e5f64abc8def000000000020
+          name: 'LAN: ETH1 packets sent'
+          type: TRAP
+          key: fritzbox.lan.eth1.packets_sent
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc000021e5f64abc8def000000000021
+          name: 'LAN: ETH2 bytes received'
+          type: TRAP
+          key: fritzbox.lan.eth2.bytes_received
+          units: B
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc000022e5f64abc8def000000000022
+          name: 'LAN: ETH2 bytes sent'
+          type: TRAP
+          key: fritzbox.lan.eth2.bytes_sent
+          units: B
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc000023e5f64abc8def000000000023
+          name: 'LAN: ETH2 packets received'
+          type: TRAP
+          key: fritzbox.lan.eth2.packets_received
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc000024e5f64abc8def000000000024
+          name: 'LAN: ETH2 packets sent'
+          type: TRAP
+          key: fritzbox.lan.eth2.packets_sent
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc000025e5f64abc8def000000000025
+          name: 'LAN: ETH3 bytes received'
+          type: TRAP
+          key: fritzbox.lan.eth3.bytes_received
+          units: B
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc000026e5f64abc8def000000000026
+          name: 'LAN: ETH3 bytes sent'
+          type: TRAP
+          key: fritzbox.lan.eth3.bytes_sent
+          units: B
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc000027e5f64abc8def000000000027
+          name: 'LAN: ETH3 packets received'
+          type: TRAP
+          key: fritzbox.lan.eth3.packets_received
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc000028e5f64abc8def000000000028
+          name: 'LAN: ETH3 packets sent'
+          type: TRAP
+          key: fritzbox.lan.eth3.packets_sent
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc000029e5f64abc8def000000000029
+          name: 'LAN: ETH4 bytes received'
+          type: TRAP
+          key: fritzbox.lan.eth4.bytes_received
+          units: B
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc00002ae5f64abc8def00000000002a
+          name: 'LAN: ETH4 bytes sent'
+          type: TRAP
+          key: fritzbox.lan.eth4.bytes_sent
+          units: B
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc00002be5f64abc8def00000000002b
+          name: 'LAN: ETH4 packets received'
+          type: TRAP
+          key: fritzbox.lan.eth4.packets_received
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc00002ce5f64abc8def00000000002c
+          name: 'LAN: ETH4 packets sent'
+          type: TRAP
+          key: fritzbox.lan.eth4.packets_sent
+          tags:
+            - tag: component
+              value: lan
+        - uuid: dc00002de5f64abc8def00000000002d
+          name: 'MyFRITZ: DynDNS name'
+          type: TRAP
+          key: fritzbox.myfritz.dyndns
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          tags:
+            - tag: component
+              value: services
+        - uuid: dc00002ee5f64abc8def00000000002e
+          name: 'Overview: Connection info'
+          type: TRAP
+          key: fritzbox.overview.connection_info
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: overview
+            - tag: source
+              value: lua
+        - uuid: dc00002fe5f64abc8def00000000002f
+          name: 'Overview: Provider info'
+          type: TRAP
+          key: fritzbox.overview.provider_info
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: overview
+            - tag: source
+              value: lua
+        - uuid: dc000030e5f64abc8def000000000030
+          name: 'Overview: USB devices'
+          type: TRAP
+          key: fritzbox.overview.usb_devices
+          tags:
+            - tag: component
+              value: overview
+            - tag: source
+              value: lua
+        - uuid: dc000031e5f64abc8def000000000031
+          name: 'System: RAM cached'
+          type: TRAP
+          key: fritzbox.system.ram_cached
+          units: B
+          tags:
+            - tag: component
+              value: system
+            - tag: source
+              value: lua
+        - uuid: dc000032e5f64abc8def000000000032
+          name: 'System: RAM fixed'
+          type: TRAP
+          key: fritzbox.system.ram_fixed
+          units: B
+          tags:
+            - tag: component
+              value: system
+            - tag: source
+              value: lua
+        - uuid: dc000033e5f64abc8def000000000033
+          name: 'System: RAM total'
+          type: TRAP
+          key: fritzbox.system.ram_total
+          units: B
+          tags:
+            - tag: component
+              value: system
+            - tag: source
+              value: lua
+        - uuid: dc000034e5f64abc8def000000000034
+          name: 'Traffic: Yesterday received'
+          type: TRAP
+          key: fritzbox.traffic.yesterday.bytes_received
+          units: B
+          tags:
+            - tag: component
+              value: traffic
+            - tag: source
+              value: lua
+        - uuid: dc000035e5f64abc8def000000000035
+          name: 'Traffic: Yesterday sent'
+          type: TRAP
+          key: fritzbox.traffic.yesterday.bytes_sent
+          units: B
+          tags:
+            - tag: component
+              value: traffic
+            - tag: source
+              value: lua
+        - uuid: dc000036e5f64abc8def000000000036
+          name: 'Traffic: Week received'
+          type: TRAP
+          key: fritzbox.traffic.week.bytes_received
+          units: B
+          tags:
+            - tag: component
+              value: traffic
+            - tag: source
+              value: lua
+        - uuid: dc000037e5f64abc8def000000000037
+          name: 'Traffic: Week sent'
+          type: TRAP
+          key: fritzbox.traffic.week.bytes_sent
+          units: B
+          tags:
+            - tag: component
+              value: traffic
+            - tag: source
+              value: lua
+        - uuid: dc000038e5f64abc8def000000000038
+          name: 'Update: Lab mode'
+          type: TRAP
+          key: fritzbox.update.lab_mode
+          tags:
+            - tag: component
+              value: update
+        - uuid: dc000039e5f64abc8def000000000039
+          name: 'USB: FTP enabled'
+          type: TRAP
+          key: fritzbox.usb.ftp_enabled
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          tags:
+            - tag: component
+              value: services
+        - uuid: dc00003ae5f64abc8def00000000003a
+          name: 'USB: SMB enabled'
+          type: TRAP
+          key: fritzbox.usb.smb_enabled
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          tags:
+            - tag: component
+              value: services
+        - uuid: dc00003be5f64abc8def00000000003b
+          name: 'WAN: Connection type'
+          type: TRAP
+          key: fritzbox.wan.connection_type
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          tags:
+            - tag: component
+              value: wan
+        - uuid: dc00003ce5f64abc8def00000000003c
+          name: 'WAN: Downstream max'
+          type: TRAP
+          key: fritzbox.wan.downstream_max_bps
+          units: bps
+          tags:
+            - tag: component
+              value: wan
+        - uuid: dc00003de5f64abc8def00000000003d
+          name: 'WAN: External IPv6 prefix length'
+          type: TRAP
+          key: fritzbox.wan.external_ipv6_prefix
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '300'
+          tags:
+            - tag: component
+              value: wan
+        - uuid: dc00003ee5f64abc8def00000000003e
+          name: 'WAN: Upstream max'
+          type: TRAP
+          key: fritzbox.wan.upstream_max_bps
+          units: bps
+          tags:
+            - tag: component
+              value: wan
+        - uuid: dc00003fe5f64abc8def00000000003f
+          name: 'WLAN 2.4 GHz: Encryption'
+          type: TRAP
+          key: fritzbox.wlan.2g.encryption
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc000040e5f64abc8def000000000040
+          name: 'WLAN 2.4 GHz: Night control'
+          type: TRAP
+          key: fritzbox.wlan.2g.night_control
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc000041e5f64abc8def000000000041
+          name: 'WLAN 2.4 GHz: Packets received'
+          type: TRAP
+          key: fritzbox.wlan.2g.packets_received
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc000042e5f64abc8def000000000042
+          name: 'WLAN 2.4 GHz: Packets sent'
+          type: TRAP
+          key: fritzbox.wlan.2g.packets_sent
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc000043e5f64abc8def000000000043
+          name: 'WLAN 2.4 GHz: Standard'
+          type: TRAP
+          key: fritzbox.wlan.2g.standard
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc000044e5f64abc8def000000000044
+          name: 'WLAN 2.4 GHz: Status'
+          type: TRAP
+          key: fritzbox.wlan.2g.status
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc000045e5f64abc8def000000000045
+          name: 'WLAN 5 GHz: Encryption'
+          type: TRAP
+          key: fritzbox.wlan.5g.encryption
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc000046e5f64abc8def000000000046
+          name: 'WLAN 5 GHz: Night control'
+          type: TRAP
+          key: fritzbox.wlan.5g.night_control
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc000047e5f64abc8def000000000047
+          name: 'WLAN 5 GHz: Packets received'
+          type: TRAP
+          key: fritzbox.wlan.5g.packets_received
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc000048e5f64abc8def000000000048
+          name: 'WLAN 5 GHz: Packets sent'
+          type: TRAP
+          key: fritzbox.wlan.5g.packets_sent
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc000049e5f64abc8def000000000049
+          name: 'WLAN 5 GHz: Standard'
+          type: TRAP
+          key: fritzbox.wlan.5g.standard
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc00004ae5f64abc8def00000000004a
+          name: 'WLAN 5 GHz: Status'
+          type: TRAP
+          key: fritzbox.wlan.5g.status
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc00004be5f64abc8def00000000004b
+          name: 'WLAN Guest: Encryption'
+          type: TRAP
+          key: fritzbox.wlan.guest.encryption
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc00004ce5f64abc8def00000000004c
+          name: 'WLAN Guest: Night control'
+          type: TRAP
+          key: fritzbox.wlan.guest.night_control
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc00004de5f64abc8def00000000004d
+          name: 'WLAN Guest: Packets received'
+          type: TRAP
+          key: fritzbox.wlan.guest.packets_received
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc00004ee5f64abc8def00000000004e
+          name: 'WLAN Guest: Packets sent'
+          type: TRAP
+          key: fritzbox.wlan.guest.packets_sent
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc00004fe5f64abc8def00000000004f
+          name: 'WLAN Guest: SSID'
+          type: TRAP
+          key: fritzbox.wlan.guest.ssid
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc000050e5f64abc8def000000000050
+          name: 'WLAN Guest: Standard'
+          type: TRAP
+          key: fritzbox.wlan.guest.standard
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: dc000051e5f64abc8def000000000051
+          name: 'WLAN Guest: Status'
+          type: TRAP
+          key: fritzbox.wlan.guest.status
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: wlan
+      discovery_rules:
+        - uuid: a1b2c3d4e5f64a7b8c9d0e1f2a3b4c5d
+          name: 'Network Devices Discovery'
+          type: TRAP
+          key: fritzbox.netdev.discovery
+          lifetime: 30d
+          description: 'Discovers active network devices from Fritz!Box LUA interface'
+          item_prototypes:
+            - uuid: b2c3d4e5f6a74b8c9d0e1f2a3b4c5d6e
+              name: 'Device [{#DEVNAME}]: Connection type'
+              type: TRAP
+              key: 'fritzbox.netdev[{#DEVNAME},type]'
+              value_type: TEXT
+              description: 'Connection type: wlan or ethernet'
+              tags:
+                - tag: component
+                  value: netdev
+                - tag: device
+                  value: '{#DEVNAME}'
+            - uuid: c3d4e5f6a7b84c9dae1f2a3b4c5d6e7f
+              name: 'Device [{#DEVNAME}]: IP address'
+              type: TRAP
+              key: 'fritzbox.netdev[{#DEVNAME},ip]'
+              value_type: TEXT
+              description: 'Current IP address of the device'
+              tags:
+                - tag: component
+                  value: netdev
+                - tag: device
+                  value: '{#DEVNAME}'
+            - uuid: d4e5f6a7b8c94d0e8f2a3b4c5d6e7f8a
+              name: 'Device [{#DEVNAME}]: Speed'
+              type: TRAP
+              key: 'fritzbox.netdev[{#DEVNAME},speed]'
+              value_type: TEXT
+              description: 'Connection speed'
+              tags:
+                - tag: component
+                  value: netdev
+                - tag: device
+                  value: '{#DEVNAME}'
+            - uuid: e5f6a7b8c9d04e1fab3b4c5d6e7f8a9b
+              name: 'Device [{#DEVNAME}]: WLAN RSSI'
+              type: TRAP
+              key: 'fritzbox.netdev[{#DEVNAME},rssi]'
+              description: 'WLAN signal strength in dBm (WLAN devices only)'
+              tags:
+                - tag: component
+                  value: netdev
+                - tag: device
+                  value: '{#DEVNAME}'
       tags:
         - tag: class
           value: network

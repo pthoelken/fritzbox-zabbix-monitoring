@@ -1,11 +1,17 @@
-FROM python:3.12-slim
+FROM zabbix/zabbix-agent:alpine-7.4-latest AS zabbix-src
+
+FROM python:3.12-alpine
 
 LABEL maintainer="pthoelken"
 LABEL description="FritzBox Zabbix Monitoring via TR-064, LUA, and Callmonitor"
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends zabbix-sender curl && \
-    rm -rf /var/lib/apt/lists/* && \
+RUN --mount=type=bind,from=zabbix-src,source=/,target=/zabbix-src \
+    SENDER=$(find /zabbix-src/usr -name "zabbix_sender" -type f 2>/dev/null | head -1) && \
+    [ -n "$SENDER" ] || (echo "ERROR: zabbix_sender not found in zabbix-src image" && exit 1) && \
+    cp "$SENDER" /usr/local/bin/zabbix_sender && \
+    chmod +x /usr/local/bin/zabbix_sender
+
+RUN apk add --no-cache pcre2 && \
     pip install --no-cache-dir "fritzconnection>=1.13.0" "requests>=2.31.0"
 
 COPY src/fritzbox_monitor.py /opt/fritzbox_monitor.py

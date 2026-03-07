@@ -455,20 +455,23 @@ def collect_lua_netdev(lua):
         if isinstance(active, list): m["fritzbox.netdev.active_count"] = len(active)
         if isinstance(passive, list): m["fritzbox.netdev.passive_count"] = len(passive)
 
+        lld_devices = []
         if isinstance(active, list):
             for dev in active:
                 if not isinstance(dev, dict): continue
                 name = dev.get("name", "")
                 if not name: continue
                 sn = name.replace(" ","_").replace("/","_").replace(".","_").replace("-","_").lower()
-                for k in ("speed","type","ip"):
+                lld_devices.append({"{#DEVNAME}": sn, "{#DEVTYPE}": dev.get("type",""), "{#DEVIP}": dev.get("ip","")})
+                for k in ("speed", "type", "ip"):
                     v = dev.get(k, "")
-                    if v: m[f"fritzbox.netdev.{sn}.{k}"] = v
+                    if v: m[f"fritzbox.netdev[{sn},{k}]"] = v
                 rssi = dev.get("rssi", "")
                 if rssi:
-                    try: m[f"fritzbox.netdev.{sn}.rssi"] = int(rssi)
+                    try: m[f"fritzbox.netdev[{sn},rssi]"] = int(rssi)
                     except: pass
-                if dev.get("guest"): m[f"fritzbox.netdev.{sn}.is_guest"] = 1
+        if lld_devices:
+            m["fritzbox.netdev.discovery"] = json.dumps({"data": lld_devices})
     except Exception as e:
         log.debug("LUA netDev parse: %s", e)
     return m
