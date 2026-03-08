@@ -271,6 +271,7 @@ zabbix_export:
               expression: 'last(/AVM FritzBox TR-064/fritzbox.dsl.status)<>"Up"'
               name: 'FritzBox: DSL link not up ({ITEM.LASTVALUE}) for {HOST.NAME}'
               priority: HIGH
+              manual_close: 'YES'
               dependencies:
                 - name: 'FritzBox: WAN disconnected for {HOST.NAME}'
                   expression: 'last(/AVM FritzBox TR-064/fritzbox.wan.is_connected)=0'
