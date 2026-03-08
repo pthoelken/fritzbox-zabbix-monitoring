@@ -539,12 +539,12 @@ zabbix_export:
           triggers:
             - uuid: 7af5e7e4ce684770a0f58f3575f52759
               expression: 'last(/AVM FritzBox TR-064/fritzbox.upnp.enabled)=1'
-              name: 'FritzBox: UPnP enabled (security risk)'
+              name: 'FritzBox: UPnP enabled'
               priority: INFO
               manual_close: 'YES'
               tags:
                 - tag: scope
-                  value: security
+                  value: notice
         - uuid: 16eed7b95d6d458d9079e3fb3b6bda64
           name: 'VPN: Remote access'
           type: TRAP
