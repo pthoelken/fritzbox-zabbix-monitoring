@@ -463,11 +463,12 @@ def collect_lua_netdev(lua):
                 if not name: continue
                 sn = name.replace(" ","_").replace("/","_").replace(".","_").replace("-","_").lower()
                 lld_devices.append({"{#DEVNAME}": sn, "{#DEVTYPE}": dev.get("type",""), "{#DEVIP}": dev.get("ip","")})
+                log.debug("LUA netDev raw device: %s", dev)
                 for k in ("speed", "type", "ip"):
-                    v = dev.get(k, "")
-                    if v: m[f"fritzbox.netdev[{sn},{k}]"] = v
-                rssi = dev.get("rssi", "")
-                if rssi:
+                    v = dev.get(k, None)
+                    if v is not None and v != "": m[f"fritzbox.netdev[{sn},{k}]"] = v
+                rssi = dev.get("rssi", None)
+                if rssi is not None and rssi != "":
                     try: m[f"fritzbox.netdev[{sn},rssi]"] = int(rssi)
                     except: pass
         if lld_devices:
