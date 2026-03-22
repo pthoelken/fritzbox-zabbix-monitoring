@@ -1579,6 +1579,7 @@ zabbix_export:
               name: 'Device [{#DEVNAME}]: WLAN RSSI'
               type: TRAP
               key: 'fritzbox.netdev[{#DEVNAME},rssi]'
+              units: dBm
               description: 'WLAN signal strength in dBm (WLAN devices only)'
               tags:
                 - tag: component

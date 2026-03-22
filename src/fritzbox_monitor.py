@@ -489,10 +489,25 @@ def collect_lua_system(lua):
             labels = ram.get("labels", [])
             series = ram.get("series", [])
             if labels and series and len(series) > 0 and isinstance(series[0], list):
-                for i, label in enumerate(labels):
-                    metric = _ram_label_map.get(label)
-                    if metric and i < len(series) and series[i]:
-                        m[f"fritzbox.system.ram_{metric}"] = _safe_int(series[i][-1])
+                # Check if labels are metric names (older firmware) or time values (FritzOS 8.x)
+                labels_are_time = labels and not isinstance(labels[0], str)
+                if labels_are_time:
+                    # FritzOS 8.x: labels=hours, series=[fixed, free, cached] by position
+                    _positional_map = ["fixed", "free", "cached"]
+                    total = 0
+                    for i, metric in enumerate(_positional_map):
+                        if i < len(series) and series[i]:
+                            val = _safe_int(series[i][-1])
+                            m[f"fritzbox.system.ram_{metric}"] = val
+                            total += val
+                    if total > 0:
+                        m["fritzbox.system.ram_total"] = total
+                else:
+                    # Older firmware: labels are metric name strings
+                    for i, label in enumerate(labels):
+                        metric = _ram_label_map.get(label)
+                        if metric and i < len(series) and series[i]:
+                            m[f"fritzbox.system.ram_{metric}"] = _safe_int(series[i][-1])
             log.debug("LUA ecoStat ramusage: labels=%s series_count=%d flat_keys=%s",
                       labels, len(series), {k: ram.get(k) for k in ("fixed","free","cached","total")})
     except Exception as e:
