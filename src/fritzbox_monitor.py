@@ -10,6 +10,7 @@ Sends all metrics to Zabbix via zabbix_sender.
 """
 
 import os
+import re
 import sys
 import json
 import time
@@ -91,6 +92,13 @@ def parse_interval(s):
     return int(s)
 
 
+# State for delta-based current BPS calculation (fallback for LTE devices)
+_wan_bps_prev = {}  # {"bytes_recv": int, "bytes_sent": int, "timestamp": float}
+
+# WLAN signal strength from TR-064, populated in collect_wlan_info, used in collect_lua_netdev
+_wlan_signal_by_mac = {}  # {mac_lower: signal_strength_percent}
+
+
 # ===================================================================
 # TR-064 Interface
 # ===================================================================
@@ -113,10 +121,16 @@ def collect_device_info(fc):
     r = safe_call(fc, "DeviceInfo1", "GetSecurityPort")
     if r:
         m["fritzbox.device.security_port"] = r.get("NewSecurityPort", 0)
+    r = safe_call(fc, "DeviceInfo1", "GetDeviceLog")
+    if r:
+        log_text = r.get("NewDeviceLog", "")
+        if log_text:
+            m["fritzbox.device.log"] = log_text[:500]
     return m
 
 
 def collect_wan_info(fc):
+    global _wan_bps_prev
     m = {}
     r = safe_call(fc, "WANCommonInterfaceConfig1", "GetCommonLinkProperties")
     if r:
@@ -145,6 +159,26 @@ def collect_wan_info(fc):
             m["fritzbox.wan.upstream_max_bps"] = r.get("Newmax_us", 0)
         except (ValueError, TypeError): pass
 
+    # Fallback for LTE devices: X_AVM-DE_GetOnlineMonitor always returns 0 for
+    # current_bps on LTE interfaces. Calculate from byte counter deltas instead.
+    now = time.time()
+    bytes_recv = m.get("fritzbox.wan.bytes_received", 0)
+    bytes_sent = m.get("fritzbox.wan.bytes_sent", 0)
+    if _wan_bps_prev and bytes_recv and bytes_sent:
+        elapsed = now - _wan_bps_prev.get("timestamp", now)
+        if elapsed > 0:
+            if m.get("fritzbox.wan.downstream_current_bps", 0) == 0:
+                delta_recv = max(0, bytes_recv - _wan_bps_prev.get("bytes_recv", bytes_recv))
+                bps = int(delta_recv * 8 / elapsed)
+                m["fritzbox.wan.downstream_current_bps"] = bps
+                log.debug("WAN: downstream_current_bps from delta: %d bps (%.1fs elapsed)", bps, elapsed)
+            if m.get("fritzbox.wan.upstream_current_bps", 0) == 0:
+                delta_sent = max(0, bytes_sent - _wan_bps_prev.get("bytes_sent", bytes_sent))
+                bps = int(delta_sent * 8 / elapsed)
+                m["fritzbox.wan.upstream_current_bps"] = bps
+                log.debug("WAN: upstream_current_bps from delta: %d bps (%.1fs elapsed)", bps, elapsed)
+    _wan_bps_prev = {"bytes_recv": bytes_recv, "bytes_sent": bytes_sent, "timestamp": now}
+
     wan_connected = False
     for svc in ["WANPPPConnection1", "WANIPConnection1"]:
         r = safe_call(fc, svc, "GetInfo")
@@ -163,10 +197,15 @@ def collect_wan_info(fc):
             m["fritzbox.wan.external_ip"] = r.get("NewExternalIPAddress", "")
             break
 
-    r = safe_call(fc, "WANIPConnection1", "X_AVM_DE_GetExternalIPv6Address")
-    if r:
-        m["fritzbox.wan.external_ipv6"] = r.get("NewExternalIPv6Address", "")
-        m["fritzbox.wan.external_ipv6_prefix"] = r.get("NewPrefixLength", "")
+    for svc in ["WANIPConnection1", "WANPPPConnection1"]:
+        r = safe_call(fc, svc, "X_AVM_DE_GetExternalIPv6Address")
+        if r:
+            ipv6 = r.get("NewExternalIPv6Address", "")
+            prefix = r.get("NewPrefixLength", "")
+            if ipv6:
+                m["fritzbox.wan.external_ipv6"] = ipv6
+                m["fritzbox.wan.external_ipv6_prefix"] = prefix
+                break
 
     for svc in ["WANPPPConnection1", "WANIPConnection1"]:
         r = safe_call(fc, svc, "GetDNSServers") or safe_call(fc, svc, "X_GetDNSServers")
@@ -205,7 +244,9 @@ def collect_dsl_info(fc):
 
 
 def collect_wlan_info(fc):
+    global _wlan_signal_by_mac
     m = {}
+    _wlan_signal_by_mac = {}
     for idx, band in {1:"2g", 2:"5g", 3:"guest"}.items():
         svc = f"WLANConfiguration{idx}"
         r = safe_call(fc, svc, "GetInfo")
@@ -217,13 +258,26 @@ def collect_wlan_info(fc):
             m[f"fritzbox.wlan.{band}.standard"] = r.get("NewStandard", "")
             m[f"fritzbox.wlan.{band}.encryption"] = r.get("NewBeaconType", "")
         r = safe_call(fc, svc, "GetTotalAssociations")
-        if r: m[f"fritzbox.wlan.{band}.total_associations"] = r.get("NewTotalAssociations", 0)
+        count = 0
+        if r:
+            count = r.get("NewTotalAssociations", 0)
+            m[f"fritzbox.wlan.{band}.total_associations"] = count
+        # Collect per-device signal strength into shared dict (used later by collect_lua_netdev)
+        for i in range(count):
+            ra = safe_call(fc, svc, "GetGenericAssociatedDeviceInfo", arguments={"NewAssociatedDeviceIndex": i})
+            if ra:
+                mac = ra.get("NewAssociatedDeviceMACAddress", "").lower()
+                signal = ra.get("NewX_AVM-DE_SignalStrength")
+                if mac and signal is not None:
+                    _wlan_signal_by_mac[mac] = signal
+                    log.debug("WLAN assoc: %s band=%s signal=%s", mac, band, signal)
         r = safe_call(fc, svc, "GetPacketStatistics")
         if r:
             m[f"fritzbox.wlan.{band}.packets_sent"] = r.get("NewTotalPacketsSent", 0)
             m[f"fritzbox.wlan.{band}.packets_received"] = r.get("NewTotalPacketsReceived", 0)
         r = safe_call(fc, svc, "X_AVM-DE_GetNightControl")
         if r: m[f"fritzbox.wlan.{band}.night_control"] = 1 if r.get("NewNightControl","") == "ON" else 0
+    log.debug("WLAN: collected signal for %d associated devices", len(_wlan_signal_by_mac))
     return m
 
 
@@ -284,7 +338,9 @@ def collect_update_info(fc):
     r = safe_call(fc, "UserInterface1", "GetInfo")
     if r:
         m["fritzbox.update.available"] = 1 if r.get("NewUpgradeAvailable","") == "1" else 0
-        m["fritzbox.update.latest_firmware"] = r.get("NewX_AVM-DE_Version", "")
+        # Send current firmware version when no update is available (field may be empty)
+        latest = r.get("NewX_AVM-DE_Version", "").strip()
+        m["fritzbox.update.latest_firmware"] = latest if latest else "-"
         m["fritzbox.update.lab_mode"] = 1 if r.get("NewX_AVM-DE_LaborVersion", "") else 0
     return m
 
@@ -375,14 +431,19 @@ class FritzBoxLUA:
             self.sid = None
         return self._get_sid()
 
-    def data_lua(self, page):
+    def data_lua(self, page, xhr_id="all"):
         if not self._ensure_session(): return None
         try:
             resp = self.session.post(f"{self.base_url}/data.lua",
-                data={"xhr":1, "sid":self.sid, "lang":"de", "page":page, "xhrId":"all", "no_sidrenew":""},
+                data={"xhr":1, "sid":self.sid, "lang":"de", "page":page, "xhrId":xhr_id, "no_sidrenew":""},
                 timeout=15)
-            return resp.json() if resp.status_code == 200 else None
-        except: return None
+            if resp.status_code != 200:
+                log.debug("LUA data.lua?page=%s xhrId=%s returned HTTP %d", page, xhr_id, resp.status_code)
+                return None
+            return resp.json()
+        except Exception as e:
+            log.debug("LUA data.lua?page=%s xhrId=%s error: %s", page, xhr_id, e)
+            return None
 
     def query_lua(self, params):
         if not self._ensure_session(): return None
@@ -415,31 +476,115 @@ def collect_lua_system(lua):
                 m[f"fritzbox.system.{dst}"] = _safe_int(val)
         ram = d.get("ramusage", {})
         if isinstance(ram, dict):
+            # Flat keys (some firmware versions)
             for k in ("fixed","free","cached","total"):
                 v = ram.get(k)
                 if v is not None: m[f"fritzbox.system.ram_{k}"] = _safe_int(v)
+            # Series/labels format — labels may be English or German depending on firmware
+            _ram_label_map = {
+                "fixed": "fixed", "free": "free", "cached": "cached", "total": "total",
+                "Fest": "fixed", "Frei": "free", "Gecacht": "cached", "Gesamt": "total",
+                "fest": "fixed", "frei": "free", "gecacht": "cached", "gesamt": "total",
+            }
+            labels = ram.get("labels", [])
+            series = ram.get("series", [])
+            if labels and series and len(series) > 0 and isinstance(series[0], list):
+                for i, label in enumerate(labels):
+                    metric = _ram_label_map.get(label)
+                    if metric and i < len(series) and series[i]:
+                        m[f"fritzbox.system.ram_{metric}"] = _safe_int(series[i][-1])
+            log.debug("LUA ecoStat ramusage: labels=%s series_count=%d flat_keys=%s",
+                      labels, len(series), {k: ram.get(k) for k in ("fixed","free","cached","total")})
     except Exception as e:
         log.debug("LUA ecoStat parse: %s", e)
     return m
 
 
+def _parse_traffic_block(block, zp, m):
+    """Parse a single period traffic block into metrics dict. Returns number of values found."""
+    if not isinstance(block, dict): return 0
+    # Use next() with key presence check to avoid skipping legitimate 0 values
+    sent = next((block[k] for k in ("BytesSent","bytesSent","BytesSentHigh","TotalBytesSent","bytes_sent","sent") if k in block), None)
+    recv = next((block[k] for k in ("BytesReceived","bytesReceived","BytesReceivedHigh","TotalBytesReceived","bytes_received","received") if k in block), None)
+    found = 0
+    if sent is not None:
+        m[f"fritzbox.traffic.{zp}.bytes_sent"] = _safe_int(sent)
+        found += 1
+    if recv is not None:
+        m[f"fritzbox.traffic.{zp}.bytes_received"] = _safe_int(recv)
+        found += 1
+    return found
+
+
 def collect_lua_traffic(lua):
     """Daily/weekly/monthly traffic volumes from data.lua?page=netCnt"""
     m = {}
-    data = lua.data_lua("netCnt")
-    if not data: return m
-    d = data.get("data", data)
+    # Period keys FritzBox may use → Zabbix metric suffix
+    period_map = [
+        ("today", "today"), ("Today", "today"),
+        ("yesterday", "yesterday"), ("Yesterday", "yesterday"),
+        ("thisWeek", "week"), ("thisweek", "week"),
+        ("thisMonth", "month"), ("thismonth", "month"),
+        ("total", "total"), ("Total", "total"),
+    ]
+
+    # Try netCnt page with multiple xhrId values — different firmware versions require different values
+    for xhr_id in ("all", "count", "start", "update"):
+        data = lua.data_lua("netCnt", xhr_id=xhr_id)
+        if not data:
+            continue
+        d = data.get("data", data)
+        log.debug("LUA netCnt xhrId=%s raw: %s", xhr_id, d)
+        found = 0
+        try:
+            # Some firmware versions nest the traffic data under a sub-key
+            for container_key in (None, "netCnt", "counter", "cnt", "traffic", "trafficData"):
+                container = d if container_key is None else d.get(container_key, {})
+                if not isinstance(container, dict): continue
+                for period_key, zp in period_map:
+                    found += _parse_traffic_block(container.get(period_key), zp, m)
+                if found > 0: break
+            if found > 0:
+                log.debug("LUA netCnt: found %d traffic values with xhrId=%s", found, xhr_id)
+                break
+            log.debug("LUA netCnt xhrId=%s: no traffic data. Top-level keys: %s",
+                      xhr_id, list(d.keys()) if isinstance(d, dict) else type(d))
+        except Exception as e:
+            log.warning("LUA netCnt parse: %s", e)
+    if not m:
+        log.info("LUA netCnt: no traffic data found with any xhrId")
+    if m: return m
+
+    # Fallback: query.lua traffic counters (works on more firmware versions)
+    log.info("LUA netCnt: trying query.lua fallback for traffic stats")
     try:
-        for period in ("today","yesterday","thisWeek","thisMonth","total"):
-            block = d.get(period, {})
-            if not isinstance(block, dict): continue
-            zp = period.lower().replace("this","")
-            sent = block.get("BytesSentHigh", block.get("TotalBytesSent", 0))
-            recv = block.get("BytesReceivedHigh", block.get("TotalBytesReceived", 0))
-            if sent: m[f"fritzbox.traffic.{zp}.bytes_sent"] = _safe_int(sent)
-            if recv: m[f"fritzbox.traffic.{zp}.bytes_received"] = _safe_int(recv)
+        qdata = lua.query_lua({
+            "logic:status/today/BytesSent": "",
+            "logic:status/today/BytesReceived": "",
+            "logic:status/yesterday/BytesSent": "",
+            "logic:status/yesterday/BytesReceived": "",
+            "logic:status/thisWeek/BytesSent": "",
+            "logic:status/thisWeek/BytesReceived": "",
+            "logic:status/thisMonth/BytesSent": "",
+            "logic:status/thisMonth/BytesReceived": "",
+            "logic:status/total/BytesSent": "",
+            "logic:status/total/BytesReceived": "",
+        })
+        if isinstance(qdata, dict):
+            log.debug("LUA query.lua traffic raw: %s", qdata)
+            period_keys = {"today","yesterday","thisWeek","thisMonth","total"}
+            period_zp = {"today":"today","yesterday":"yesterday","thisWeek":"week","thisMonth":"month","total":"total"}
+            for period in period_keys:
+                zp = period_zp[period]
+                sent = qdata.get(f"logic:status/{period}/BytesSent")
+                recv = qdata.get(f"logic:status/{period}/BytesReceived")
+                if sent is not None: m[f"fritzbox.traffic.{zp}.bytes_sent"] = _safe_int(sent)
+                if recv is not None: m[f"fritzbox.traffic.{zp}.bytes_received"] = _safe_int(recv)
+        if not m:
+            log.info("LUA query.lua traffic: no data either. Available keys: %s",
+                     list(qdata.keys())[:20] if isinstance(qdata, dict) else qdata)
     except Exception as e:
-        log.debug("LUA netCnt parse: %s", e)
+        log.warning("LUA query.lua traffic fallback: %s", e)
     return m
 
 
@@ -462,13 +607,83 @@ def collect_lua_netdev(lua):
                 name = dev.get("name", "")
                 if not name: continue
                 sn = name.replace(" ","_").replace("/","_").replace(".","_").replace("-","_").lower()
-                lld_devices.append({"{#DEVNAME}": sn, "{#DEVTYPE}": dev.get("type",""), "{#DEVIP}": dev.get("ip","")})
+                # IP: field can be a plain string, a dict, or a list of dicts
+                # e.g. {'_node': 'entry0', 'addrtype': 'IPv4', ..., 'ip': '192.168.178.x'}
+                def _extract_ip(val):
+                    if isinstance(val, str): return val
+                    if isinstance(val, dict): return val.get("ip", "")
+                    if isinstance(val, list):
+                        for entry in val:
+                            if isinstance(entry, dict) and entry.get("addrtype","").startswith("IPv4"):
+                                return entry.get("ip", "")
+                        for entry in val:
+                            if isinstance(entry, dict): return entry.get("ip", "")
+                    return ""
+                ip = (_extract_ip(dev.get("ip")) or _extract_ip(dev.get("ipv4")) or
+                      _extract_ip(dev.get("addr")) or _extract_ip(dev.get("address")) or "")
+                if not ip:
+                    # Try any key that looks like it could contain an IP
+                    for k, v in dev.items():
+                        if k not in ("name","type","properties","wlan","uid","mac","UID","MAC") and isinstance(v, (str, dict, list)):
+                            candidate = _extract_ip(v)
+                            if candidate and "." in candidate:
+                                ip = candidate
+                                log.debug("LUA netDev: found IP in field '%s' for %s", k, name)
+                                break
+                lld_devices.append({"{#DEVNAME}": sn, "{#DEVTYPE}": dev.get("type",""), "{#DEVIP}": ip})
                 log.debug("LUA netDev raw device: %s", dev)
-                for k in ("speed", "type", "ip"):
-                    v = dev.get(k, None)
-                    if v is not None and v != "": m[f"fritzbox.netdev[{sn},{k}]"] = v
-                rssi = dev.get("rssi", None)
-                if rssi is not None and rssi != "":
+
+                dev_type = dev.get("type", "")
+                if dev_type: m[f"fritzbox.netdev[{sn},type]"] = dev_type
+                if ip: m[f"fritzbox.netdev[{sn},ip]"] = ip
+
+                log.debug("LUA netDev device keys: %s → %s", name, list(dev.keys()))
+
+                # Speed and RSSI: newer FritzOS firmware encodes WLAN stats in
+                # properties[0]['txt'] as "2,4 GHz, 720 / 288 Mbit/s"
+                # Try structured fields first, then parse the properties text.
+                wlan_sub = dev.get("wlan") if isinstance(dev.get("wlan"), dict) else {}
+                props_list = dev.get("properties", [])
+                props_txt = ""
+                if isinstance(props_list, list):
+                    for p in props_list:
+                        if isinstance(p, dict) and p.get("txt"):
+                            props_txt = p["txt"]
+                            break
+
+                speed = None
+                for candidate in (wlan_sub.get("speed"), wlan_sub.get("rate"),
+                                  dev.get("speed"), dev.get("rate")):
+                    if candidate not in (None, "", 0):
+                        speed = candidate
+                        break
+                # Parse "X GHz, RX / TX Mbit/s" from properties text
+                if speed is None and props_txt:
+                    mo = re.search(r'(\d+(?:[,\.]\d+)?)\s*GHz,\s*(\d+)\s*/\s*(\d+)\s*Mbit/s', props_txt)
+                    if mo:
+                        speed = max(int(mo.group(2)), int(mo.group(3)))
+                        m[f"fritzbox.netdev[{sn},band]"] = mo.group(1).replace(",", ".") + " GHz"
+                if speed is not None:
+                    m[f"fritzbox.netdev[{sn},speed]"] = speed
+
+                # RSSI: try structured LUA fields, then TR-064 signal data by MAC
+                rssi = None
+                for candidate in (wlan_sub.get("rssi"), wlan_sub.get("signal"), wlan_sub.get("signalStrength"),
+                                  dev.get("rssi"), dev.get("signal"), dev.get("signalStrength")):
+                    if candidate is not None and candidate != "":
+                        rssi = candidate
+                        break
+                # Parse RSSI from properties text, e.g. "-65 dBm"
+                if rssi is None and props_txt:
+                    mo_rssi = re.search(r'(-\d+)\s*dBm', props_txt)
+                    if mo_rssi:
+                        rssi = mo_rssi.group(1)
+                # Fall back to TR-064 signal data collected during collect_wlan_info
+                if rssi is None:
+                    mac = dev.get("mac", "").lower()
+                    if mac in _wlan_signal_by_mac:
+                        rssi = _wlan_signal_by_mac[mac]
+                if rssi is not None:
                     try: m[f"fritzbox.netdev[{sn},rssi]"] = int(rssi)
                     except: pass
         if lld_devices:
@@ -484,21 +699,47 @@ def collect_lua_overview(lua):
     data = lua.data_lua("overview")
     if not data: return m
     d = data.get("data", data)
+    log.debug("LUA overview raw keys: %s", list(d.keys()) if isinstance(d, dict) else type(d))
     try:
-        inet = d.get("internet", d.get("inetStat", {}))
+        # Internet section: try multiple known key names across firmware versions
+        inet = None
+        for key in ("internet", "inetStat", "wan", "inet"):
+            inet = d.get(key)
+            if isinstance(inet, dict): break
         if isinstance(inet, dict):
-            for item in inet.get("txt", []):
-                if isinstance(item, str) and len(item) > 3:
-                    if "verbunden" in item.lower():
-                        m["fritzbox.overview.connection_info"] = item
+            # txt: list of status strings; ip: external IP; provider: provider name
+            txt_items = inet.get("txt", inet.get("text", []))
+            if isinstance(txt_items, list):
+                conn_parts = []
+                prov_parts = []
+                for item in txt_items:
+                    if not isinstance(item, str) or len(item) < 2: continue
+                    low = item.lower()
+                    if any(w in low for w in ("verbunden","connected","online","seit","since","ip")):
+                        conn_parts.append(item)
                     else:
-                        m["fritzbox.overview.provider_info"] = item
+                        prov_parts.append(item)
+                if conn_parts: m["fritzbox.overview.connection_info"] = " | ".join(conn_parts)
+                if prov_parts: m["fritzbox.overview.provider_info"] = " | ".join(prov_parts)
+            # Some firmware returns provider/IP as direct fields
+            if not m.get("fritzbox.overview.provider_info"):
+                for key in ("provider", "isp", "providerName"):
+                    v = inet.get(key)
+                    if isinstance(v, str) and v:
+                        m["fritzbox.overview.provider_info"] = v
+                        break
+            if not m.get("fritzbox.overview.connection_info"):
+                for key in ("ip", "externalIP", "externalIPv4"):
+                    v = inet.get(key)
+                    if isinstance(v, str) and v:
+                        m["fritzbox.overview.connection_info"] = v
+                        break
         usb = d.get("usb", {})
         if isinstance(usb, dict):
-            cnt = usb.get("count", 0)
-            if cnt: m["fritzbox.overview.usb_devices"] = _safe_int(cnt)
+            cnt = usb.get("count", usb.get("anzahl", 0))
+            if cnt is not None: m["fritzbox.overview.usb_devices"] = _safe_int(cnt)
     except Exception as e:
-        log.debug("LUA overview parse: %s", e)
+        log.warning("LUA overview parse: %s", e)
     return m
 
 
@@ -527,18 +768,148 @@ def collect_lua_dsl_detail(lua):
     """Extended DSL stats from data.lua?page=dslStat not available via TR-064"""
     m = {}
     data = lua.data_lua("dslStat")
-    if not data: return m
+    if not data:
+        log.debug("LUA dslStat: page returned no data")
+        return m
     d = data.get("data", data)
+    log.debug("LUA dslStat raw: %s", d)
     try:
-        line = d.get("line", d.get("atur", {}))
-        if isinstance(line, dict):
-            for k in ("snr","attn","capacity","crcPerMin","errSeconds","sevErrSeconds","lossOfSignal","lossOfFrame"):
-                for direction in ("ds","us"):
-                    v = line.get(f"{direction}_{k}", line.get(f"{direction}{k}"))
-                    if v is not None:
-                        m[f"fritzbox.dsl_detail.{direction}.{k}"] = v
+        # Try multiple known container keys across firmware versions
+        line = None
+        for container_key in ("line", "atur", "aturStat", "dsl", "dslStats", "dsl_stats", "stat"):
+            candidate = d.get(container_key)
+            if isinstance(candidate, dict):
+                line = candidate
+                break
+        if line is None:
+            line = d if isinstance(d, dict) else {}
+
+        if not line:
+            log.info("LUA dslStat: unexpected structure — top-level keys: %s", list(d.keys()) if isinstance(d, dict) else d)
+            return m
+
+        neg_vals_raw = line.get("negotiatedValues")
+        err_ctrs_raw = line.get("errorCounters")
+
+        # --- List-based structure (FritzOS 8.x) ---
+        # negotiatedValues: [{'title': '...', 'unit': '...', 'val': [{'ds': '...', 'us': '...'}]}, ...]
+        # errorCounters:    [{'title': '...', 'val': [{'ds': '...', 'us': '...'}]}, ...]
+        if isinstance(neg_vals_raw, list) or isinstance(err_ctrs_raw, list):
+            # Title → metric key mapping (German and English titles)
+            NEG_TITLE_MAP = {
+                "störabstandsmarge":  "snr",
+                "noise margin":       "snr",
+                "snr margin":         "snr",
+                "leitungsdämpfung":   "attn",
+                "line attenuation":   "attn",
+                "leitungskapazität":  "capacity",
+                "attainable rate":    "capacity",
+                "maximum rate":       "capacity",
+            }
+            ERR_TITLE_MAP = {
+                "fehlern (es)":       "errSeconds",
+                "error seconds":      "errSeconds",
+                "fehlern (ses)":      "sevErrSeconds",
+                "severely errored":   "sevErrSeconds",
+                "pro minute":         "crcPerMin",
+                "per minute":         "crcPerMin",
+                "crc per minute":     "crcPerMin",
+                "signalverlust":      "lossOfSignal",
+                "loss of signal":     "lossOfSignal",
+                "rahmenverlust":      "lossOfFrame",
+                "loss of frame":      "lossOfFrame",
+            }
+
+            def _parse_list_metrics(items, title_map):
+                """Extract ds/us values from list-based FritzOS metric containers."""
+                results = {}  # metric_key → {'ds': ..., 'us': ...}
+                if not isinstance(items, list):
+                    return results
+                for item in items:
+                    if not isinstance(item, dict):
+                        continue
+                    title = item.get("title", "").strip().lower()
+                    val_list = item.get("val")
+                    if not val_list or not isinstance(val_list, list):
+                        continue
+                    val = val_list[0] if val_list else {}
+                    if not isinstance(val, dict):
+                        continue
+                    # Match title against known mappings (substring match for flexibility)
+                    for title_key, metric_key in title_map.items():
+                        if title_key in title and metric_key not in results:
+                            ds_v = val.get("ds")
+                            us_v = val.get("us")
+                            if ds_v is not None or us_v is not None:
+                                results[metric_key] = {"ds": ds_v, "us": us_v}
+                            break
+                return results
+
+            neg_metrics = _parse_list_metrics(neg_vals_raw, NEG_TITLE_MAP)
+            err_metrics = _parse_list_metrics(err_ctrs_raw, ERR_TITLE_MAP)
+            all_metrics = {**neg_metrics, **err_metrics}
+
+            for metric_key, dir_vals in all_metrics.items():
+                for direction, val in dir_vals.items():
+                    if val is not None:
+                        m[f"fritzbox.dsl_detail.{direction}.{metric_key}"] = val
+
+            if not m:
+                neg_titles = [i.get("title") for i in neg_vals_raw if isinstance(i, dict)] if isinstance(neg_vals_raw, list) else []
+                err_titles = [i.get("title") for i in err_ctrs_raw if isinstance(i, dict)] if isinstance(err_ctrs_raw, list) else []
+                log.info("LUA dslStat: no DSL metrics from list structure. neg titles: %s err titles: %s", neg_titles, err_titles)
+
+        # --- Dict/flat structure (older firmware) ---
+        else:
+            neg_vals = neg_vals_raw if isinstance(neg_vals_raw, dict) else {}
+            err_ctrs = err_ctrs_raw if isinstance(err_ctrs_raw, dict) else {}
+
+            def _get_dir_sub(container, direction):
+                for key in (direction, f"{direction}stream", "downstream" if direction == "ds" else "upstream"):
+                    v = container.get(key)
+                    if isinstance(v, dict): return v
+                return {}
+
+            ds_sub = _get_dir_sub(neg_vals, "ds") or _get_dir_sub(line, "ds")
+            us_sub = _get_dir_sub(neg_vals, "us") or _get_dir_sub(line, "us")
+            ds_err = _get_dir_sub(err_ctrs, "ds")
+            us_err = _get_dir_sub(err_ctrs, "us")
+
+            perf_aliases = {
+                "snr":      ("snr", "SNR", "noiseMargin", "noise_margin", "snrMargin"),
+                "attn":     ("attn", "attenuation", "Attenuation", "latn"),
+                "capacity": ("capacity", "Capacity", "maxBitRate", "maxRate", "attainableRate"),
+            }
+            err_aliases = {
+                "crcPerMin":     ("crcPerMin", "crc", "CRC", "crcErrors"),
+                "errSeconds":    ("errSeconds", "es", "ES", "errorSeconds"),
+                "sevErrSeconds": ("sevErrSeconds", "ses", "SES", "severelyErroredSeconds"),
+                "lossOfSignal":  ("lossOfSignal", "los", "LOS"),
+                "lossOfFrame":   ("lossOfFrame", "lof", "LOF"),
+            }
+
+            def _lookup(containers_and_aliases, direction):
+                results = {}
+                for container, aliases_dict in containers_and_aliases:
+                    for k, aliases in aliases_dict.items():
+                        if k in results: continue
+                        for alias in aliases:
+                            v = container.get(alias, container.get(f"{direction}_{alias}", container.get(f"{direction}{alias}")))
+                            if v is not None:
+                                results[k] = v
+                                break
+                return results
+
+            for direction, perf_sub, err_sub in (("ds", ds_sub, ds_err), ("us", us_sub, us_err)):
+                found = _lookup([(perf_sub, perf_aliases), (err_sub, err_aliases), (line, {**perf_aliases, **err_aliases})], direction)
+                for k, v in found.items():
+                    m[f"fritzbox.dsl_detail.{direction}.{k}"] = v
+
+            if not m:
+                log.info("LUA dslStat: no DSL detail metrics found. line keys: %s", list(line.keys()))
+
     except Exception as e:
-        log.debug("LUA dslStat parse: %s", e)
+        log.warning("LUA dslStat parse: %s", e)
     return m
 
 
