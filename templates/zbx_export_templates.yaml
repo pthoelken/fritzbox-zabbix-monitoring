@@ -1567,8 +1567,9 @@ zabbix_export:
               name: 'Device [{#DEVNAME}]: Speed'
               type: TRAP
               key: 'fritzbox.netdev[{#DEVNAME},speed]'
-              value_type: TEXT
-              description: 'Connection speed'
+              value_type: FLOAT
+              units: Mbit/s
+              description: 'WLAN connection speed in Mbit/s (max of RX/TX from device properties)'
               tags:
                 - tag: component
                   value: netdev
@@ -1579,6 +1580,17 @@ zabbix_export:
               type: TRAP
               key: 'fritzbox.netdev[{#DEVNAME},rssi]'
               description: 'WLAN signal strength in dBm (WLAN devices only)'
+              tags:
+                - tag: component
+                  value: netdev
+                - tag: device
+                  value: '{#DEVNAME}'
+            - uuid: f6a7b8c9d0e14f2abc4c5d6e7f8a9b0c
+              name: 'Device [{#DEVNAME}]: WLAN Band'
+              type: TRAP
+              key: 'fritzbox.netdev[{#DEVNAME},band]'
+              value_type: TEXT
+              description: 'WLAN frequency band (e.g. 2.4 GHz or 5 GHz, WLAN devices only)'
               tags:
                 - tag: component
                   value: netdev
