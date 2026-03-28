@@ -5,3 +5,5 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    #volumes:
+    #  - ./zabbix.psk:/run/secrets/zabbix_psk:ro

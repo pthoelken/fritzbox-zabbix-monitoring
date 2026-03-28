@@ -49,7 +49,7 @@ FRITZBOX_HOSTNAME = os.environ.get("FRITZBOX_HOSTNAME", "fritz.box")
 ZABBIX_SERVER = os.environ.get("ZABBIX_SERVER", "")
 ZABBIX_SERVER_PORT = os.environ.get("ZABBIX_SERVER_PORT", "10051")
 TLS_PSK_IDENTITY = os.environ.get("TLS_PSK_IDENTITY", "")
-TLS_PSK = os.environ.get("TLS_PSK", "")
+TLS_PSK_FILE = os.environ.get("TLS_PSK_FILE", "")
 
 INTERVAL = os.environ.get("INTERVAL", "60s")
 DEBUG = os.environ.get("ZABBIX_SENDER_DEBUG", "false").lower() in ("true", "1", "yes")
@@ -1060,8 +1060,8 @@ def send_to_zabbix(metrics):
         tmp = f.name
     try:
         cmd = ["zabbix_sender","-z",ZABBIX_SERVER,"-p",ZABBIX_SERVER_PORT,"-i",tmp]
-        if TLS_PSK_IDENTITY and TLS_PSK:
-            cmd += ["--tls-connect","psk","--tls-psk-identity",TLS_PSK_IDENTITY,"--tls-psk",TLS_PSK]
+        if TLS_PSK_IDENTITY and TLS_PSK_FILE:
+            cmd += ["--tls-connect","psk","--tls-psk-identity",TLS_PSK_IDENTITY,"--tls-psk-file",TLS_PSK_FILE]
         if DEBUG: cmd.append("-vv")
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         if DEBUG and (r.stdout.strip() or r.stderr.strip()):

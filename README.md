@@ -129,7 +129,7 @@ Zabbix sender: sent: 107; skipped: 0; total: 107
 | `ZABBIX_SERVER` | - | Zabbix server IP (required) |
 | `ZABBIX_SERVER_PORT` | `10051` | Zabbix trapper port |
 | `TLS_PSK_IDENTITY` | - | PSK identity for encryption |
-| `TLS_PSK` | - | PSK secret |
+| `TLS_PSK_FILE` | - | Path to PSK file inside the container (e.g. `/run/secrets/zabbix_psk`) |
 | `FRITZBOX_IP` | `192.168.178.1` | Fritz!Box IP |
 | `FRITZBOX_PORT` | `49000` | TR-064 port |
 | `FRITZBOX_USE_TLS` | `false` | Use HTTPS for TR-064 |
