@@ -1,6 +1,6 @@
 services:
   fritzbox-monitor:
-    image: pthoelken/fritzbox-zabbix-monitoring:latest
+    image: pthoelken/fritzbox-zabbix-monitoring:${VERSION}
     container_name: fritzbox-zabbix-monitoring
     restart: unless-stopped
     env_file:
