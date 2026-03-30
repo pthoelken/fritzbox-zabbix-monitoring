@@ -286,8 +286,7 @@ def collect_lan_info(fc):
     r = safe_call(fc, "Hosts1", "GetHostNumberOfEntries")
     if r: m["fritzbox.lan.host_count"] = r.get("NewHostNumberOfEntries", 0)
     try:
-        fh = FritzHosts(address=FRITZBOX_IP, user=FRITZBOX_USER, password=FRITZBOX_PASSWD,
-                        port=FRITZBOX_PORT, use_tls=FRITZBOX_USE_TLS)
+        fh = FritzHosts(fc=fc)
         hosts = fh.get_hosts_info()
         active = [h for h in hosts if h.get("status")]
         m["fritzbox.lan.active_hosts"] = len(active)
