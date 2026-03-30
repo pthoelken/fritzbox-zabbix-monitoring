@@ -151,7 +151,7 @@ zabbix_export:
           name: 'Device: Log'
           type: TRAP
           key: fritzbox.device.log
-          value_type: TEXT
+          value_type: LOG
           tags:
             - tag: component
               value: device
