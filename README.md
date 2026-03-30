@@ -15,6 +15,7 @@ Comprehensive monitoring of AVM Fritz!Box routers using **three interfaces**, se
 - **100+ metrics** collected per cycle
 - **LUA interface** adds CPU temperature, CPU load, RAM usage, daily/monthly/total traffic volumes, per-device WLAN signal strength (RSSI), and extended DSL statistics
 - **Callmonitor** tracks incoming, outgoing, missed, and active calls in real time
+- **Device log events** are sent as Zabbix log values with deduplication (uses `X_AVM-DE_GetDeviceLogPath` when available, fallback to `GetDeviceLog`)
 - **PBKDF2 authentication** for the LUA interface (with MD5 fallback for older firmware)
 - **Zabbix 7 YAML template** with 80+ items, 20+ triggers, template macros
 - **Feature toggles**: Enable/disable LUA and Callmonitor independently
@@ -24,7 +25,7 @@ Comprehensive monitoring of AVM Fritz!Box routers using **three interfaces**, se
 
 | Category | Source | Examples |
 |----------|--------|---------|
-| **Device** | TR-064 | Model, firmware, serial, uptime, event log |
+| **Device** | TR-064 | Model, firmware, serial, uptime, event log stream |
 | **WAN** | TR-064 | Connection status, external IPv4/IPv6, bytes/packets, current transfer rates, DNS |
 | **DSL** | TR-064 | Sync rates, noise margin (SNR), attenuation, CRC/FEC/HEC errors |
 | **DSL Detail** | LUA | Error seconds, loss of signal/frame, capacity |
@@ -141,6 +142,8 @@ Zabbix sender: sent: 107; skipped: 0; total: 107
 | `ENABLE_LUA` | `true` | Enable LUA web interface |
 | `ENABLE_CALLMONITOR` | `false` | Enable TCP 1012 callmonitor |
 | `CALLMONITOR_PORT` | `1012` | Callmonitor TCP port |
+| `DEVICE_LOG_ITEM_KEY` | `fritzbox.device.log` | Zabbix item key used for streamed device log events |
+| `DEVICE_LOG_HISTORY_SIZE` | `5000` | Number of log fingerprints kept in memory for deduplication |
 
 ## Template Macros
 

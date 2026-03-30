@@ -6,4 +6,5 @@ __pycache__/
 .DS_Store
 .idea/
 .vscode/
-.claude
+.ruff_cache/
+docker-compose.local.yaml
