@@ -103,6 +103,12 @@ _wlan_signal_by_mac = {}  # {mac_lower: signal_strength_percent}
 # TR-064 Interface
 # ===================================================================
 def safe_call(fc, service, action, arguments=None):
+    if service not in fc.services:
+        log.debug("Service %s not supported", service)
+        return None
+    if action not in fc.services[service].actions:
+        log.debug("Action %s in service %s not supported", action, service)
+        return None
     try:
         return fc.call_action(service, action, arguments=arguments) if arguments else fc.call_action(service, action)
     except Exception as e:
