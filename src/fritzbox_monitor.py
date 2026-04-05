@@ -1829,21 +1829,23 @@ def main():
         log.error("ZABBIX_SERVER required")
         sys.exit(1)
 
-    try:
-        fc = FritzConnection(
-            address=FRITZBOX_IP,
-            user=FRITZBOX_USER,
-            password=FRITZBOX_PASSWD,
-            port=FRITZBOX_PORT,
-            use_tls=FRITZBOX_USE_TLS,
-            timeout=10,
-        )
-        log.info(
-            "TR-064: Connected to %s (FritzOS %s)", fc.modelname, fc.system_version
-        )
-    except Exception as e:
-        log.error("TR-064 connection failed: %s", e)
-        sys.exit(1)
+    fc = None
+    while fc is None:
+        try:
+            fc = FritzConnection(
+                address=FRITZBOX_IP,
+                user=FRITZBOX_USER,
+                password=FRITZBOX_PASSWD,
+                port=FRITZBOX_PORT,
+                use_tls=FRITZBOX_USE_TLS,
+                timeout=10,
+            )
+            log.info(
+                "TR-064: Connected to %s (FritzOS %s)", fc.modelname, fc.system_version
+            )
+        except Exception as e:
+            log.error("TR-064 connection failed: %s — retrying in 30 seconds", e)
+            time.sleep(30)
 
     lua = None
     if ENABLE_LUA:
