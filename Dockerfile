@@ -1,6 +1,6 @@
 FROM zabbix/zabbix-agent:alpine-7.4-latest AS zabbix-src
 
-FROM python:3.12-alpine
+FROM python:3.14-alpine
 
 LABEL maintainer="pthoelken"
 LABEL description="FritzBox Zabbix Monitoring via TR-064, LUA, and Callmonitor"
