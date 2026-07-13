@@ -167,6 +167,13 @@ zabbix_export:
           tags:
             - tag: component
               value: device
+        - uuid: dc00001be5f64abc8def00000000001b
+          name: 'Device: Security port'
+          type: TRAP
+          key: fritzbox.device.security_port
+          tags:
+            - tag: component
+              value: device
         - uuid: 4b4dae75ba434824965b62748028929a
           name: 'Device: Serial'
           type: TRAP
@@ -196,6 +203,27 @@ zabbix_export:
               tags:
                 - tag: scope
                   value: notice
+        - uuid: dc000001e5f64abc8def000000000001
+          name: 'DSL: ATUC CRC errors'
+          type: TRAP
+          key: fritzbox.dsl.atuc_crc_errors
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000002e5f64abc8def000000000002
+          name: 'DSL: ATUC FEC errors'
+          type: TRAP
+          key: fritzbox.dsl.atuc_fec_errors
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000003e5f64abc8def000000000003
+          name: 'DSL: ATUC HEC errors'
+          type: TRAP
+          key: fritzbox.dsl.atuc_hec_errors
+          tags:
+            - tag: component
+              value: dsl
         - uuid: 7985ddbcaf954215872ad59549cf102a
           name: 'DSL: CRC errors (near)'
           type: TRAP
@@ -231,6 +259,14 @@ zabbix_export:
           tags:
             - tag: component
               value: dsl
+        - uuid: dc000004e5f64abc8def000000000004
+          name: 'DSL: Downstream max rate'
+          type: TRAP
+          key: fritzbox.dsl.downstream_max_rate
+          units: kbps
+          tags:
+            - tag: component
+              value: dsl
         - uuid: e19f8a5ef180485f952a24646393e278
           name: 'DSL: Downstream noise margin'
           type: TRAP
@@ -251,10 +287,40 @@ zabbix_export:
               tags:
                 - tag: scope
                   value: performance
+        - uuid: dc000005e5f64abc8def000000000005
+          name: 'DSL: Downstream power'
+          type: TRAP
+          key: fritzbox.dsl.downstream_power
+          tags:
+            - tag: component
+              value: dsl
         - uuid: f90b6ed6dde64f57a76c2d76d049675f
           name: 'DSL: FEC errors (near)'
           type: TRAP
           key: fritzbox.dsl.fec_errors
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000006e5f64abc8def000000000006
+          name: 'DSL: HEC errors (near)'
+          type: TRAP
+          key: fritzbox.dsl.hec_errors
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000007e5f64abc8def000000000007
+          name: 'DSL: Link status'
+          type: TRAP
+          key: fritzbox.dsl.link_status
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: dsl
+        - uuid: dc000008e5f64abc8def000000000008
+          name: 'DSL: Link type'
+          type: TRAP
+          key: fritzbox.dsl.link_type
+          value_type: TEXT
           tags:
             - tag: component
               value: dsl
@@ -298,6 +364,14 @@ zabbix_export:
           tags:
             - tag: component
               value: dsl
+        - uuid: dc000009e5f64abc8def000000000009
+          name: 'DSL: Upstream max rate'
+          type: TRAP
+          key: fritzbox.dsl.upstream_max_rate
+          units: kbps
+          tags:
+            - tag: component
+              value: dsl
         - uuid: 346e9b2d2e9a404f9091851ccb3d7a9c
           name: 'DSL: Upstream noise margin'
           type: TRAP
@@ -307,597 +381,6 @@ zabbix_export:
             - type: MULTIPLIER
               parameters:
                 - '0.1'
-          tags:
-            - tag: component
-              value: dsl
-        - uuid: 8afd3370be264c38a60faca84c4c41c7
-          name: 'LAN: Active hosts'
-          type: TRAP
-          key: fritzbox.lan.active_hosts
-          tags:
-            - tag: component
-              value: lan
-        - uuid: 84c40f846d5b4db3ac2a4aa3f2c20ac1
-          name: 'LAN: Active LAN hosts'
-          type: TRAP
-          key: fritzbox.lan.active_lan_hosts
-          tags:
-            - tag: component
-              value: lan
-        - uuid: 0a8ddb5223fc45b999d0288ef315c47a
-          name: 'LAN: Active WLAN hosts'
-          type: TRAP
-          key: fritzbox.lan.active_wlan_hosts
-          tags:
-            - tag: component
-              value: lan
-        - uuid: 06b22eee533c42e689d068425783d74b
-          name: 'LAN: Total hosts'
-          type: TRAP
-          key: fritzbox.lan.total_hosts
-          tags:
-            - tag: component
-              value: lan
-        - uuid: f93ad69d92da4cbb88ecd2b237850879
-          name: 'MyFRITZ: Enabled'
-          type: TRAP
-          key: fritzbox.myfritz.enabled
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '86400'
-          tags:
-            - tag: component
-              value: services
-        - uuid: 1d02e813d55640e4a9bd3db3ef0d761e
-          name: 'NetDev: Active count'
-          type: TRAP
-          key: fritzbox.netdev.active_count
-          tags:
-            - tag: component
-              value: netdev
-            - tag: source
-              value: lua
-        - uuid: 6470494a21c54d93841a5c0e7141e252
-          name: 'NetDev: Passive count'
-          type: TRAP
-          key: fritzbox.netdev.passive_count
-          tags:
-            - tag: component
-              value: netdev
-            - tag: source
-              value: lua
-        - uuid: 85768097777d4372bb7dbe5f9501b761
-          name: 'System: CPU temperature'
-          type: TRAP
-          key: fritzbox.system.cpu_temperature
-          units: C
-          tags:
-            - tag: component
-              value: system
-            - tag: source
-              value: lua
-          triggers:
-            - uuid: 3e0d0bd01d39400284ec5900e7994218
-              expression: 'last(/AVM FritzBox TR-064/fritzbox.system.cpu_temperature)>{$FRITZBOX.CPU_TEMP.HIGH}'
-              name: 'FritzBox: CPU temperature critical ({ITEM.LASTVALUE}C)'
-              priority: HIGH
-              tags:
-                - tag: scope
-                  value: performance
-            - uuid: d60d1fac91d24409800033464cc60bec
-              expression: 'last(/AVM FritzBox TR-064/fritzbox.system.cpu_temperature)>{$FRITZBOX.CPU_TEMP.WARN}'
-              name: 'FritzBox: CPU temperature high ({ITEM.LASTVALUE}C)'
-              priority: WARNING
-              tags:
-                - tag: scope
-                  value: performance
-        - uuid: 04c1b81bb2a749eba2a9571f060ce6c4
-          name: 'System: CPU usage'
-          type: TRAP
-          key: fritzbox.system.cpu_usage
-          units: '%'
-          tags:
-            - tag: component
-              value: system
-            - tag: source
-              value: lua
-          triggers:
-            - uuid: 9cc58376db9f48879bdabaaa2c4b56ef
-              expression: 'last(/AVM FritzBox TR-064/fritzbox.system.cpu_usage)>{$FRITZBOX.CPU_USAGE.WARN}'
-              name: 'FritzBox: CPU usage high ({ITEM.LASTVALUE}%)'
-              priority: WARNING
-              tags:
-                - tag: scope
-                  value: performance
-        - uuid: ddbcc19c6b384a7db78cb4b4e93d8fbb
-          name: 'System: RAM free'
-          type: TRAP
-          key: fritzbox.system.ram_free
-          units: B
-          tags:
-            - tag: component
-              value: system
-            - tag: source
-              value: lua
-        - uuid: d95629b3b222409085bdd26d27894ce9
-          name: 'System: RAM usage'
-          type: TRAP
-          key: fritzbox.system.ram_usage_percent
-          units: '%'
-          tags:
-            - tag: component
-              value: system
-            - tag: source
-              value: lua
-          triggers:
-            - uuid: a3aa0f1e32e54f07bb39589a88efba6d
-              expression: 'last(/AVM FritzBox TR-064/fritzbox.system.ram_usage_percent)>{$FRITZBOX.RAM_USAGE.WARN}'
-              name: 'FritzBox: RAM usage high ({ITEM.LASTVALUE}%)'
-              priority: WARNING
-              tags:
-                - tag: scope
-                  value: performance
-        - uuid: e4de21650a99428dbd8c19d07fd51c82
-          name: 'Traffic: Month received'
-          type: TRAP
-          key: fritzbox.traffic.month.bytes_received
-          units: B
-          tags:
-            - tag: component
-              value: traffic
-            - tag: source
-              value: lua
-        - uuid: a0cb16711338439fbafba079fd14c0bb
-          name: 'Traffic: Month sent'
-          type: TRAP
-          key: fritzbox.traffic.month.bytes_sent
-          units: B
-          tags:
-            - tag: component
-              value: traffic
-            - tag: source
-              value: lua
-        - uuid: 9faac982721f48c6a92e116433794058
-          name: 'Traffic: Today received'
-          type: TRAP
-          key: fritzbox.traffic.today.bytes_received
-          units: B
-          tags:
-            - tag: component
-              value: traffic
-            - tag: source
-              value: lua
-        - uuid: d3ad36cd229e40fea3f8002a51c5c578
-          name: 'Traffic: Today sent'
-          type: TRAP
-          key: fritzbox.traffic.today.bytes_sent
-          units: B
-          tags:
-            - tag: component
-              value: traffic
-            - tag: source
-              value: lua
-        - uuid: bd42d7b5d2cb4a318fc1da9b32c5c2fb
-          name: 'Traffic: Total received'
-          type: TRAP
-          key: fritzbox.traffic.total.bytes_received
-          units: B
-          tags:
-            - tag: component
-              value: traffic
-            - tag: source
-              value: lua
-        - uuid: d3d9a909492242458af752bedc5c95a9
-          name: 'Traffic: Total sent'
-          type: TRAP
-          key: fritzbox.traffic.total.bytes_sent
-          units: B
-          tags:
-            - tag: component
-              value: traffic
-            - tag: source
-              value: lua
-        - uuid: e29f8a1ebc27423bbe57afa0431b94a7
-          name: 'Update: Available'
-          type: TRAP
-          key: fritzbox.update.available
-          tags:
-            - tag: component
-              value: update
-          triggers:
-            - uuid: 1e318540a53c46b7bb5ecd3b3413bd33
-              expression: 'last(/AVM FritzBox TR-064/fritzbox.update.available)=1'
-              name: 'FritzBox: Firmware update available'
-              priority: WARNING
-              manual_close: 'YES'
-              tags:
-                - tag: scope
-                  value: security
-        - uuid: b623c6dc98bc44339119479072ce5426
-          name: 'Update: Latest version'
-          type: TRAP
-          key: fritzbox.update.latest_firmware
-          value_type: TEXT
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '86400'
-          tags:
-            - tag: component
-              value: update
-        - uuid: 16cdb9a44f63417495381e4f7ecb4421
-          name: 'UPnP: Enabled'
-          type: TRAP
-          key: fritzbox.upnp.enabled
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '86400'
-          tags:
-            - tag: component
-              value: services
-          triggers:
-            - uuid: 7af5e7e4ce684770a0f58f3575f52759
-              expression: 'last(/AVM FritzBox TR-064/fritzbox.upnp.enabled)=1'
-              name: 'FritzBox: UPnP enabled'
-              priority: INFO
-              manual_close: 'YES'
-              tags:
-                - tag: scope
-                  value: notice
-        - uuid: 16eed7b95d6d458d9079e3fb3b6bda64
-          name: 'VPN: Remote access'
-          type: TRAP
-          key: fritzbox.vpn.remote_access_enabled
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '86400'
-          tags:
-            - tag: component
-              value: services
-        - uuid: 81ecdda8f9bb4592bb7787e4881d19ce
-          name: 'WAN: Access type'
-          type: TRAP
-          key: fritzbox.wan.access_type
-          value_type: TEXT
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '3600'
-          tags:
-            - tag: component
-              value: wan
-        - uuid: dc26f880d7b44282936cbeb62f934653
-          name: 'WAN: Bytes received'
-          type: TRAP
-          key: fritzbox.wan.bytes_received
-          units: B
-          tags:
-            - tag: component
-              value: wan
-        - uuid: 870c3d79cce24eee833f16e423890b14
-          name: 'WAN: Bytes sent'
-          type: TRAP
-          key: fritzbox.wan.bytes_sent
-          units: B
-          tags:
-            - tag: component
-              value: wan
-        - uuid: a385f54b0ac44c3f8af5b93bb7c0743c
-          name: 'WAN: Connection status'
-          type: TRAP
-          key: fritzbox.wan.connection_status
-          value_type: TEXT
-          tags:
-            - tag: component
-              value: wan
-        - uuid: 5b8e926715f54517bac9d637dc9a2f8e
-          name: 'WAN: Connection uptime'
-          type: TRAP
-          key: fritzbox.wan.connection_uptime
-          units: s
-          tags:
-            - tag: component
-              value: wan
-        - uuid: f79ef1a876e6489898dd98be849fbd35
-          name: 'WAN: DNS servers'
-          type: TRAP
-          key: fritzbox.wan.dns_servers
-          value_type: TEXT
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '3600'
-          tags:
-            - tag: component
-              value: wan
-        - uuid: 80d220bb143e4be396c60ab56721867a
-          name: 'WAN: Downstream current'
-          type: TRAP
-          key: fritzbox.wan.downstream_current_bps
-          units: bps
-          tags:
-            - tag: component
-              value: wan
-        - uuid: 1f7f3d2cc3cc435fb0820532e65ed55f
-          name: 'WAN: External IPv4'
-          type: TRAP
-          key: fritzbox.wan.external_ip
-          value_type: TEXT
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '300'
-          tags:
-            - tag: component
-              value: wan
-          triggers:
-            - uuid: 133a941970624481b80402ff956a09e3
-              expression: 'change(/AVM FritzBox TR-064/fritzbox.wan.external_ip)<>0'
-              name: 'FritzBox: External IP changed to {ITEM.LASTVALUE}'
-              priority: INFO
-              manual_close: 'YES'
-              tags:
-                - tag: scope
-                  value: notice
-        - uuid: cc737ccac2c2401eac5d4e4838632a70
-          name: 'WAN: External IPv6'
-          type: TRAP
-          key: fritzbox.wan.external_ipv6
-          value_type: TEXT
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '300'
-          tags:
-            - tag: component
-              value: wan
-        - uuid: a5bd5ad7282748ab853442cf50d31239
-          name: 'WAN: Connected'
-          type: TRAP
-          key: fritzbox.wan.is_connected
-          tags:
-            - tag: component
-              value: wan
-          triggers:
-            - uuid: fab0032c598b4b79b25fa86ca2eaa1da
-              expression: 'last(/AVM FritzBox TR-064/fritzbox.wan.is_connected)=0'
-              name: 'FritzBox: WAN disconnected for {HOST.NAME}'
-              priority: DISASTER
-              tags:
-                - tag: scope
-                  value: availability
-        - uuid: 6782b787d3b248f2bd3531d7f592d33a
-          name: 'WAN: Last error'
-          type: TRAP
-          key: fritzbox.wan.last_error
-          value_type: TEXT
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '3600'
-          tags:
-            - tag: component
-              value: wan
-        - uuid: 02fd6ba7175646dfb250b6b2f8f0c8dc
-          name: 'WAN: Layer1 downstream max'
-          type: TRAP
-          key: fritzbox.wan.layer1_downstream_max
-          units: bps
-          tags:
-            - tag: component
-              value: wan
-        - uuid: 39698a3c19da4617b370db72eb3aa6ab
-          name: 'WAN: Layer1 upstream max'
-          type: TRAP
-          key: fritzbox.wan.layer1_upstream_max
-          units: bps
-          tags:
-            - tag: component
-              value: wan
-        - uuid: ee7a6585b7a84f19856e6a1cf6c6dd38
-          name: 'WAN: Packets received'
-          type: TRAP
-          key: fritzbox.wan.packets_received
-          tags:
-            - tag: component
-              value: wan
-        - uuid: 1dcb9eadf5ca4b4291657a25dffcf544
-          name: 'WAN: Packets sent'
-          type: TRAP
-          key: fritzbox.wan.packets_sent
-          tags:
-            - tag: component
-              value: wan
-        - uuid: 0e92cb1d8f034aabb6c0306e5ca51b0c
-          name: 'WAN: Physical link status'
-          type: TRAP
-          key: fritzbox.wan.physical_link_status
-          value_type: TEXT
-          tags:
-            - tag: component
-              value: wan
-          triggers:
-            - uuid: 5c2a6633b6104d5d893f826eee6a5283
-              expression: 'last(/AVM FritzBox TR-064/fritzbox.wan.physical_link_status)<>"Up"'
-              name: 'FritzBox: WAN physical link down for {HOST.NAME}'
-              priority: HIGH
-              tags:
-                - tag: scope
-                  value: availability
-        - uuid: 645d002197614c3bac766b748f61c73f
-          name: 'WAN: Upstream current'
-          type: TRAP
-          key: fritzbox.wan.upstream_current_bps
-          units: bps
-          tags:
-            - tag: component
-              value: wan
-        - uuid: 8951ddcdce8e4d27aa3b76059ad3a38e
-          name: 'WLAN 2.4 GHz: Channel'
-          type: TRAP
-          key: fritzbox.wlan.2g.channel
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '3600'
-          tags:
-            - tag: component
-              value: wlan
-        - uuid: c333e7e1e4d74672950fde4697f3f05a
-          name: 'WLAN 2.4 GHz: Enabled'
-          type: TRAP
-          key: fritzbox.wlan.2g.enabled
-          tags:
-            - tag: component
-              value: wlan
-        - uuid: 433d9a1300374153bab888525e12335f
-          name: 'WLAN 2.4 GHz: SSID'
-          type: TRAP
-          key: fritzbox.wlan.2g.ssid
-          value_type: TEXT
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '86400'
-          tags:
-            - tag: component
-              value: wlan
-        - uuid: 5c5a8fda6ba943538e8d8b030b0250ed
-          name: 'WLAN 2.4 GHz: Clients'
-          type: TRAP
-          key: fritzbox.wlan.2g.total_associations
-          tags:
-            - tag: component
-              value: wlan
-        - uuid: a1efb0917fc3449da4344e9068d761bd
-          name: 'WLAN 5 GHz: Channel'
-          type: TRAP
-          key: fritzbox.wlan.5g.channel
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '3600'
-          tags:
-            - tag: component
-              value: wlan
-        - uuid: 738d5d589b4e472ea11f5817d236fd56
-          name: 'WLAN 5 GHz: Enabled'
-          type: TRAP
-          key: fritzbox.wlan.5g.enabled
-          tags:
-            - tag: component
-              value: wlan
-        - uuid: 7f27bbade1384cf9989c5daa373165f1
-          name: 'WLAN 5 GHz: SSID'
-          type: TRAP
-          key: fritzbox.wlan.5g.ssid
-          value_type: TEXT
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '86400'
-          tags:
-            - tag: component
-              value: wlan
-        - uuid: 1febb2f349e745cfa80d9b8a75ac6c2c
-          name: 'WLAN 5 GHz: Clients'
-          type: TRAP
-          key: fritzbox.wlan.5g.total_associations
-          tags:
-            - tag: component
-              value: wlan
-        - uuid: 79d376c2964e4559be509427b0f0035e
-          name: 'WLAN Guest: Channel'
-          type: TRAP
-          key: fritzbox.wlan.guest.channel
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - '3600'
-          tags:
-            - tag: component
-              value: wlan
-        - uuid: 7ff7a8fb84884fd88b463a374978494a
-          name: 'WLAN Guest: Enabled'
-          type: TRAP
-          key: fritzbox.wlan.guest.enabled
-          tags:
-            - tag: component
-              value: wlan
-        - uuid: f2f994b81bd248efbc560a40f7c6512d
-          name: 'WLAN Guest: Clients'
-          type: TRAP
-          key: fritzbox.wlan.guest.total_associations
-          tags:
-            - tag: component
-              value: wlan
-        - uuid: dc000001e5f64abc8def000000000001
-          name: 'DSL: ATUC CRC errors'
-          type: TRAP
-          key: fritzbox.dsl.atuc_crc_errors
-          tags:
-            - tag: component
-              value: dsl
-        - uuid: dc000002e5f64abc8def000000000002
-          name: 'DSL: ATUC FEC errors'
-          type: TRAP
-          key: fritzbox.dsl.atuc_fec_errors
-          tags:
-            - tag: component
-              value: dsl
-        - uuid: dc000003e5f64abc8def000000000003
-          name: 'DSL: ATUC HEC errors'
-          type: TRAP
-          key: fritzbox.dsl.atuc_hec_errors
-          tags:
-            - tag: component
-              value: dsl
-        - uuid: dc000004e5f64abc8def000000000004
-          name: 'DSL: Downstream max rate'
-          type: TRAP
-          key: fritzbox.dsl.downstream_max_rate
-          units: kbps
-          tags:
-            - tag: component
-              value: dsl
-        - uuid: dc000005e5f64abc8def000000000005
-          name: 'DSL: Downstream power'
-          type: TRAP
-          key: fritzbox.dsl.downstream_power
-          tags:
-            - tag: component
-              value: dsl
-        - uuid: dc000006e5f64abc8def000000000006
-          name: 'DSL: HEC errors (near)'
-          type: TRAP
-          key: fritzbox.dsl.hec_errors
-          tags:
-            - tag: component
-              value: dsl
-        - uuid: dc000007e5f64abc8def000000000007
-          name: 'DSL: Link status'
-          type: TRAP
-          key: fritzbox.dsl.link_status
-          value_type: TEXT
-          tags:
-            - tag: component
-              value: dsl
-        - uuid: dc000008e5f64abc8def000000000008
-          name: 'DSL: Link type'
-          type: TRAP
-          key: fritzbox.dsl.link_type
-          value_type: TEXT
-          tags:
-            - tag: component
-              value: dsl
-        - uuid: dc000009e5f64abc8def000000000009
-          name: 'DSL: Upstream max rate'
-          type: TRAP
-          key: fritzbox.dsl.upstream_max_rate
-          units: kbps
           tags:
             - tag: component
               value: dsl
@@ -1060,17 +543,24 @@ zabbix_export:
               value: dsl
             - tag: source
               value: lua
-        - uuid: dc00001be5f64abc8def00000000001b
-          name: 'Device: Security port'
+        - uuid: 8afd3370be264c38a60faca84c4c41c7
+          name: 'LAN: Active hosts'
           type: TRAP
-          key: fritzbox.device.security_port
+          key: fritzbox.lan.active_hosts
           tags:
             - tag: component
-              value: device
-        - uuid: dc00001ce5f64abc8def00000000001c
-          name: 'LAN: Host count'
+              value: lan
+        - uuid: 84c40f846d5b4db3ac2a4aa3f2c20ac1
+          name: 'LAN: Active LAN hosts'
           type: TRAP
-          key: fritzbox.lan.host_count
+          key: fritzbox.lan.active_lan_hosts
+          tags:
+            - tag: component
+              value: lan
+        - uuid: 0a8ddb5223fc45b999d0288ef315c47a
+          name: 'LAN: Active WLAN hosts'
+          type: TRAP
+          key: fritzbox.lan.active_wlan_hosts
           tags:
             - tag: component
               value: lan
@@ -1194,6 +684,20 @@ zabbix_export:
           tags:
             - tag: component
               value: lan
+        - uuid: dc00001ce5f64abc8def00000000001c
+          name: 'LAN: Host count'
+          type: TRAP
+          key: fritzbox.lan.host_count
+          tags:
+            - tag: component
+              value: lan
+        - uuid: 06b22eee533c42e689d068425783d74b
+          name: 'LAN: Total hosts'
+          type: TRAP
+          key: fritzbox.lan.total_hosts
+          tags:
+            - tag: component
+              value: lan
         - uuid: dc00002de5f64abc8def00000000002d
           name: 'MyFRITZ: DynDNS name'
           type: TRAP
@@ -1206,6 +710,35 @@ zabbix_export:
           tags:
             - tag: component
               value: services
+        - uuid: f93ad69d92da4cbb88ecd2b237850879
+          name: 'MyFRITZ: Enabled'
+          type: TRAP
+          key: fritzbox.myfritz.enabled
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          tags:
+            - tag: component
+              value: services
+        - uuid: 1d02e813d55640e4a9bd3db3ef0d761e
+          name: 'NetDev: Active count'
+          type: TRAP
+          key: fritzbox.netdev.active_count
+          tags:
+            - tag: component
+              value: netdev
+            - tag: source
+              value: lua
+        - uuid: 6470494a21c54d93841a5c0e7141e252
+          name: 'NetDev: Passive count'
+          type: TRAP
+          key: fritzbox.netdev.passive_count
+          tags:
+            - tag: component
+              value: netdev
+            - tag: source
+              value: lua
         - uuid: dc00002ee5f64abc8def00000000002e
           name: 'Overview: Connection info'
           type: TRAP
@@ -1235,6 +768,49 @@ zabbix_export:
               value: overview
             - tag: source
               value: lua
+        - uuid: 85768097777d4372bb7dbe5f9501b761
+          name: 'System: CPU temperature'
+          type: TRAP
+          key: fritzbox.system.cpu_temperature
+          units: °C
+          tags:
+            - tag: component
+              value: system
+            - tag: source
+              value: lua
+          triggers:
+            - uuid: 3e0d0bd01d39400284ec5900e7994218
+              expression: 'last(/AVM FritzBox TR-064/fritzbox.system.cpu_temperature)>{$FRITZBOX.CPU_TEMP.HIGH}'
+              name: 'FritzBox: CPU temperature critical ({ITEM.LASTVALUE})'
+              priority: HIGH
+              tags:
+                - tag: scope
+                  value: performance
+            - uuid: d60d1fac91d24409800033464cc60bec
+              expression: 'last(/AVM FritzBox TR-064/fritzbox.system.cpu_temperature)>{$FRITZBOX.CPU_TEMP.WARN}'
+              name: 'FritzBox: CPU temperature high ({ITEM.LASTVALUE})'
+              priority: WARNING
+              tags:
+                - tag: scope
+                  value: performance
+        - uuid: 04c1b81bb2a749eba2a9571f060ce6c4
+          name: 'System: CPU usage'
+          type: TRAP
+          key: fritzbox.system.cpu_usage
+          units: '%'
+          tags:
+            - tag: component
+              value: system
+            - tag: source
+              value: lua
+          triggers:
+            - uuid: 9cc58376db9f48879bdabaaa2c4b56ef
+              expression: 'last(/AVM FritzBox TR-064/fritzbox.system.cpu_usage)>{$FRITZBOX.CPU_USAGE.WARN}'
+              name: 'FritzBox: CPU usage high ({ITEM.LASTVALUE})'
+              priority: WARNING
+              tags:
+                - tag: scope
+                  value: performance
         - uuid: dc000031e5f64abc8def000000000031
           name: 'System: RAM cached'
           type: TRAP
@@ -1255,6 +831,16 @@ zabbix_export:
               value: system
             - tag: source
               value: lua
+        - uuid: ddbcc19c6b384a7db78cb4b4e93d8fbb
+          name: 'System: RAM free'
+          type: TRAP
+          key: fritzbox.system.ram_free
+          units: B
+          tags:
+            - tag: component
+              value: system
+            - tag: source
+              value: lua
         - uuid: dc000033e5f64abc8def000000000033
           name: 'System: RAM total'
           type: TRAP
@@ -1265,20 +851,78 @@ zabbix_export:
               value: system
             - tag: source
               value: lua
-        - uuid: dc000034e5f64abc8def000000000034
-          name: 'Traffic: Yesterday received'
+        - uuid: d95629b3b222409085bdd26d27894ce9
+          name: 'System: RAM usage'
           type: TRAP
-          key: fritzbox.traffic.yesterday.bytes_received
+          key: fritzbox.system.ram_usage_percent
+          units: '%'
+          tags:
+            - tag: component
+              value: system
+            - tag: source
+              value: lua
+          triggers:
+            - uuid: a3aa0f1e32e54f07bb39589a88efba6d
+              expression: 'last(/AVM FritzBox TR-064/fritzbox.system.ram_usage_percent)>{$FRITZBOX.RAM_USAGE.WARN}'
+              name: 'FritzBox: RAM usage high ({ITEM.LASTVALUE}%)'
+              priority: WARNING
+              tags:
+                - tag: scope
+                  value: performance
+        - uuid: e4de21650a99428dbd8c19d07fd51c82
+          name: 'Traffic: Month received'
+          type: TRAP
+          key: fritzbox.traffic.month.bytes_received
           units: B
           tags:
             - tag: component
               value: traffic
             - tag: source
               value: lua
-        - uuid: dc000035e5f64abc8def000000000035
-          name: 'Traffic: Yesterday sent'
+        - uuid: a0cb16711338439fbafba079fd14c0bb
+          name: 'Traffic: Month sent'
           type: TRAP
-          key: fritzbox.traffic.yesterday.bytes_sent
+          key: fritzbox.traffic.month.bytes_sent
+          units: B
+          tags:
+            - tag: component
+              value: traffic
+            - tag: source
+              value: lua
+        - uuid: 9faac982721f48c6a92e116433794058
+          name: 'Traffic: Today received'
+          type: TRAP
+          key: fritzbox.traffic.today.bytes_received
+          units: B
+          tags:
+            - tag: component
+              value: traffic
+            - tag: source
+              value: lua
+        - uuid: d3ad36cd229e40fea3f8002a51c5c578
+          name: 'Traffic: Today sent'
+          type: TRAP
+          key: fritzbox.traffic.today.bytes_sent
+          units: B
+          tags:
+            - tag: component
+              value: traffic
+            - tag: source
+              value: lua
+        - uuid: bd42d7b5d2cb4a318fc1da9b32c5c2fb
+          name: 'Traffic: Total received'
+          type: TRAP
+          key: fritzbox.traffic.total.bytes_received
+          units: B
+          tags:
+            - tag: component
+              value: traffic
+            - tag: source
+              value: lua
+        - uuid: d3d9a909492242458af752bedc5c95a9
+          name: 'Traffic: Total sent'
+          type: TRAP
+          key: fritzbox.traffic.total.bytes_sent
           units: B
           tags:
             - tag: component
@@ -1305,6 +949,42 @@ zabbix_export:
               value: traffic
             - tag: source
               value: lua
+        - uuid: dc000034e5f64abc8def000000000034
+          name: 'Traffic: Yesterday received'
+          type: TRAP
+          key: fritzbox.traffic.yesterday.bytes_received
+          units: B
+          tags:
+            - tag: component
+              value: traffic
+            - tag: source
+              value: lua
+        - uuid: dc000035e5f64abc8def000000000035
+          name: 'Traffic: Yesterday sent'
+          type: TRAP
+          key: fritzbox.traffic.yesterday.bytes_sent
+          units: B
+          tags:
+            - tag: component
+              value: traffic
+            - tag: source
+              value: lua
+        - uuid: e29f8a1ebc27423bbe57afa0431b94a7
+          name: 'Update: Available'
+          type: TRAP
+          key: fritzbox.update.available
+          tags:
+            - tag: component
+              value: update
+          triggers:
+            - uuid: 1e318540a53c46b7bb5ecd3b3413bd33
+              expression: 'last(/AVM FritzBox TR-064/fritzbox.update.available)=1'
+              name: 'FritzBox: Firmware update available'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: scope
+                  value: security
         - uuid: dc000038e5f64abc8def000000000038
           name: 'Update: Lab mode'
           type: TRAP
@@ -1312,6 +992,38 @@ zabbix_export:
           tags:
             - tag: component
               value: update
+        - uuid: b623c6dc98bc44339119479072ce5426
+          name: 'Update: Latest version'
+          type: TRAP
+          key: fritzbox.update.latest_firmware
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          tags:
+            - tag: component
+              value: update
+        - uuid: 16cdb9a44f63417495381e4f7ecb4421
+          name: 'UPnP: Enabled'
+          type: TRAP
+          key: fritzbox.upnp.enabled
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          tags:
+            - tag: component
+              value: services
+          triggers:
+            - uuid: 7af5e7e4ce684770a0f58f3575f52759
+              expression: 'last(/AVM FritzBox TR-064/fritzbox.upnp.enabled)=1'
+              name: 'FritzBox: UPnP enabled'
+              priority: INFO
+              manual_close: 'YES'
+              tags:
+                - tag: scope
+                  value: notice
         - uuid: dc000039e5f64abc8def000000000039
           name: 'USB: FTP enabled'
           type: TRAP
@@ -1334,6 +1046,53 @@ zabbix_export:
           tags:
             - tag: component
               value: services
+        - uuid: 16eed7b95d6d458d9079e3fb3b6bda64
+          name: 'VPN: Remote access'
+          type: TRAP
+          key: fritzbox.vpn.remote_access_enabled
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          tags:
+            - tag: component
+              value: services
+        - uuid: 81ecdda8f9bb4592bb7787e4881d19ce
+          name: 'WAN: Access type'
+          type: TRAP
+          key: fritzbox.wan.access_type
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          tags:
+            - tag: component
+              value: wan
+        - uuid: dc26f880d7b44282936cbeb62f934653
+          name: 'WAN: Bytes received'
+          type: TRAP
+          key: fritzbox.wan.bytes_received
+          units: B
+          tags:
+            - tag: component
+              value: wan
+        - uuid: 870c3d79cce24eee833f16e423890b14
+          name: 'WAN: Bytes sent'
+          type: TRAP
+          key: fritzbox.wan.bytes_sent
+          units: B
+          tags:
+            - tag: component
+              value: wan
+        - uuid: a385f54b0ac44c3f8af5b93bb7c0743c
+          name: 'WAN: Connection status'
+          type: TRAP
+          key: fritzbox.wan.connection_status
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: wan
         - uuid: dc00003be5f64abc8def00000000003b
           name: 'WAN: Connection type'
           type: TRAP
@@ -1346,11 +1105,72 @@ zabbix_export:
           tags:
             - tag: component
               value: wan
+        - uuid: 5b8e926715f54517bac9d637dc9a2f8e
+          name: 'WAN: Connection uptime'
+          type: TRAP
+          key: fritzbox.wan.connection_uptime
+          units: s
+          tags:
+            - tag: component
+              value: wan
+        - uuid: f79ef1a876e6489898dd98be849fbd35
+          name: 'WAN: DNS servers'
+          type: TRAP
+          key: fritzbox.wan.dns_servers
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          tags:
+            - tag: component
+              value: wan
+        - uuid: 80d220bb143e4be396c60ab56721867a
+          name: 'WAN: Downstream current'
+          type: TRAP
+          key: fritzbox.wan.downstream_current_bps
+          units: bps
+          tags:
+            - tag: component
+              value: wan
         - uuid: dc00003ce5f64abc8def00000000003c
           name: 'WAN: Downstream max'
           type: TRAP
           key: fritzbox.wan.downstream_max_bps
           units: bps
+          tags:
+            - tag: component
+              value: wan
+        - uuid: 1f7f3d2cc3cc435fb0820532e65ed55f
+          name: 'WAN: External IPv4'
+          type: TRAP
+          key: fritzbox.wan.external_ip
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '300'
+          tags:
+            - tag: component
+              value: wan
+          triggers:
+            - uuid: 133a941970624481b80402ff956a09e3
+              expression: 'change(/AVM FritzBox TR-064/fritzbox.wan.external_ip)<>0'
+              name: 'FritzBox: External IP changed to {ITEM.LASTVALUE}'
+              priority: INFO
+              manual_close: 'YES'
+              tags:
+                - tag: scope
+                  value: notice
+        - uuid: cc737ccac2c2401eac5d4e4838632a70
+          name: 'WAN: External IPv6'
+          type: TRAP
+          key: fritzbox.wan.external_ipv6
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '300'
           tags:
             - tag: component
               value: wan
@@ -1366,6 +1186,87 @@ zabbix_export:
           tags:
             - tag: component
               value: wan
+        - uuid: a5bd5ad7282748ab853442cf50d31239
+          name: 'WAN: Connected'
+          type: TRAP
+          key: fritzbox.wan.is_connected
+          tags:
+            - tag: component
+              value: wan
+          triggers:
+            - uuid: fab0032c598b4b79b25fa86ca2eaa1da
+              expression: 'last(/AVM FritzBox TR-064/fritzbox.wan.is_connected)=0'
+              name: 'FritzBox: WAN disconnected for {HOST.NAME}'
+              priority: DISASTER
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: 6782b787d3b248f2bd3531d7f592d33a
+          name: 'WAN: Last error'
+          type: TRAP
+          key: fritzbox.wan.last_error
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          tags:
+            - tag: component
+              value: wan
+        - uuid: 02fd6ba7175646dfb250b6b2f8f0c8dc
+          name: 'WAN: Layer1 downstream max'
+          type: TRAP
+          key: fritzbox.wan.layer1_downstream_max
+          units: bps
+          tags:
+            - tag: component
+              value: wan
+        - uuid: 39698a3c19da4617b370db72eb3aa6ab
+          name: 'WAN: Layer1 upstream max'
+          type: TRAP
+          key: fritzbox.wan.layer1_upstream_max
+          units: bps
+          tags:
+            - tag: component
+              value: wan
+        - uuid: ee7a6585b7a84f19856e6a1cf6c6dd38
+          name: 'WAN: Packets received'
+          type: TRAP
+          key: fritzbox.wan.packets_received
+          tags:
+            - tag: component
+              value: wan
+        - uuid: 1dcb9eadf5ca4b4291657a25dffcf544
+          name: 'WAN: Packets sent'
+          type: TRAP
+          key: fritzbox.wan.packets_sent
+          tags:
+            - tag: component
+              value: wan
+        - uuid: 0e92cb1d8f034aabb6c0306e5ca51b0c
+          name: 'WAN: Physical link status'
+          type: TRAP
+          key: fritzbox.wan.physical_link_status
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: wan
+          triggers:
+            - uuid: 5c2a6633b6104d5d893f826eee6a5283
+              expression: 'last(/AVM FritzBox TR-064/fritzbox.wan.physical_link_status)<>"Up"'
+              name: 'FritzBox: WAN physical link down for {HOST.NAME}'
+              priority: HIGH
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: 645d002197614c3bac766b748f61c73f
+          name: 'WAN: Upstream current'
+          type: TRAP
+          key: fritzbox.wan.upstream_current_bps
+          units: bps
+          tags:
+            - tag: component
+              value: wan
         - uuid: dc00003ee5f64abc8def00000000003e
           name: 'WAN: Upstream max'
           type: TRAP
@@ -1374,6 +1275,24 @@ zabbix_export:
           tags:
             - tag: component
               value: wan
+        - uuid: 8951ddcdce8e4d27aa3b76059ad3a38e
+          name: 'WLAN 2.4 GHz: Channel'
+          type: TRAP
+          key: fritzbox.wlan.2g.channel
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: c333e7e1e4d74672950fde4697f3f05a
+          name: 'WLAN 2.4 GHz: Enabled'
+          type: TRAP
+          key: fritzbox.wlan.2g.enabled
+          tags:
+            - tag: component
+              value: wlan
         - uuid: dc00003fe5f64abc8def00000000003f
           name: 'WLAN 2.4 GHz: Encryption'
           type: TRAP
@@ -1403,6 +1322,18 @@ zabbix_export:
           tags:
             - tag: component
               value: wlan
+        - uuid: 433d9a1300374153bab888525e12335f
+          name: 'WLAN 2.4 GHz: SSID'
+          type: TRAP
+          key: fritzbox.wlan.2g.ssid
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          tags:
+            - tag: component
+              value: wlan
         - uuid: dc000043e5f64abc8def000000000043
           name: 'WLAN 2.4 GHz: Standard'
           type: TRAP
@@ -1420,6 +1351,31 @@ zabbix_export:
           type: TRAP
           key: fritzbox.wlan.2g.status
           value_type: TEXT
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: 5c5a8fda6ba943538e8d8b030b0250ed
+          name: 'WLAN 2.4 GHz: Clients'
+          type: TRAP
+          key: fritzbox.wlan.2g.total_associations
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: a1efb0917fc3449da4344e9068d761bd
+          name: 'WLAN 5 GHz: Channel'
+          type: TRAP
+          key: fritzbox.wlan.5g.channel
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: 738d5d589b4e472ea11f5817d236fd56
+          name: 'WLAN 5 GHz: Enabled'
+          type: TRAP
+          key: fritzbox.wlan.5g.enabled
           tags:
             - tag: component
               value: wlan
@@ -1452,6 +1408,18 @@ zabbix_export:
           tags:
             - tag: component
               value: wlan
+        - uuid: 7f27bbade1384cf9989c5daa373165f1
+          name: 'WLAN 5 GHz: SSID'
+          type: TRAP
+          key: fritzbox.wlan.5g.ssid
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          tags:
+            - tag: component
+              value: wlan
         - uuid: dc000049e5f64abc8def000000000049
           name: 'WLAN 5 GHz: Standard'
           type: TRAP
@@ -1469,6 +1437,31 @@ zabbix_export:
           type: TRAP
           key: fritzbox.wlan.5g.status
           value_type: TEXT
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: 1febb2f349e745cfa80d9b8a75ac6c2c
+          name: 'WLAN 5 GHz: Clients'
+          type: TRAP
+          key: fritzbox.wlan.5g.total_associations
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: 79d376c2964e4559be509427b0f0035e
+          name: 'WLAN Guest: Channel'
+          type: TRAP
+          key: fritzbox.wlan.guest.channel
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          tags:
+            - tag: component
+              value: wlan
+        - uuid: 7ff7a8fb84884fd88b463a374978494a
+          name: 'WLAN Guest: Enabled'
+          type: TRAP
+          key: fritzbox.wlan.guest.enabled
           tags:
             - tag: component
               value: wlan
@@ -1533,6 +1526,13 @@ zabbix_export:
           tags:
             - tag: component
               value: wlan
+        - uuid: f2f994b81bd248efbc560a40f7c6512d
+          name: 'WLAN Guest: Clients'
+          type: TRAP
+          key: fritzbox.wlan.guest.total_associations
+          tags:
+            - tag: component
+              value: wlan
       discovery_rules:
         - uuid: a1b2c3d4e5f64a7b8c9d0e1f2a3b4c5d
           name: 'Network Devices Discovery'
@@ -1541,12 +1541,12 @@ zabbix_export:
           lifetime: 30d
           description: 'Discovers active network devices from Fritz!Box LUA interface'
           item_prototypes:
-            - uuid: b2c3d4e5f6a74b8c9d0e1f2a3b4c5d6e
-              name: 'Device [{#DEVNAME}]: Connection type'
+            - uuid: f6a7b8c9d0e14f2abc4c5d6e7f8a9b0c
+              name: 'Device [{#DEVNAME}]: WLAN Band'
               type: TRAP
-              key: 'fritzbox.netdev[{#DEVNAME},type]'
+              key: 'fritzbox.netdev[{#DEVNAME},band]'
               value_type: TEXT
-              description: 'Connection type: wlan or ethernet'
+              description: 'WLAN frequency band (e.g. 2.4 GHz or 5 GHz, WLAN devices only)'
               tags:
                 - tag: component
                   value: netdev
@@ -1558,6 +1558,17 @@ zabbix_export:
               key: 'fritzbox.netdev[{#DEVNAME},ip]'
               value_type: TEXT
               description: 'Current IP address of the device'
+              tags:
+                - tag: component
+                  value: netdev
+                - tag: device
+                  value: '{#DEVNAME}'
+            - uuid: e5f6a7b8c9d04e1fab3b4c5d6e7f8a9b
+              name: 'Device [{#DEVNAME}]: WLAN RSSI'
+              type: TRAP
+              key: 'fritzbox.netdev[{#DEVNAME},rssi]'
+              units: dBm
+              description: 'WLAN signal strength in dBm (WLAN devices only)'
               tags:
                 - tag: component
                   value: netdev
@@ -1575,23 +1586,12 @@ zabbix_export:
                   value: netdev
                 - tag: device
                   value: '{#DEVNAME}'
-            - uuid: e5f6a7b8c9d04e1fab3b4c5d6e7f8a9b
-              name: 'Device [{#DEVNAME}]: WLAN RSSI'
+            - uuid: b2c3d4e5f6a74b8c9d0e1f2a3b4c5d6e
+              name: 'Device [{#DEVNAME}]: Connection type'
               type: TRAP
-              key: 'fritzbox.netdev[{#DEVNAME},rssi]'
-              units: dBm
-              description: 'WLAN signal strength in dBm (WLAN devices only)'
-              tags:
-                - tag: component
-                  value: netdev
-                - tag: device
-                  value: '{#DEVNAME}'
-            - uuid: f6a7b8c9d0e14f2abc4c5d6e7f8a9b0c
-              name: 'Device [{#DEVNAME}]: WLAN Band'
-              type: TRAP
-              key: 'fritzbox.netdev[{#DEVNAME},band]'
+              key: 'fritzbox.netdev[{#DEVNAME},type]'
               value_type: TEXT
-              description: 'WLAN frequency band (e.g. 2.4 GHz or 5 GHz, WLAN devices only)'
+              description: 'Connection type: wlan or ethernet'
               tags:
                 - tag: component
                   value: netdev
