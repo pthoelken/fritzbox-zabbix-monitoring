@@ -498,6 +498,101 @@ def collect_dsl_info(fc):
     return m
 
 
+def _find_service(fc, fragment):
+    """Return the TR-064 service name containing `fragment`, or None."""
+    for name in fc.services:
+        if fragment in name:
+            return name
+    return None
+
+
+def _dbm(val):
+    """FRITZ!OS reports optical levels in dBm/1000."""
+    try:
+        return round(int(val) / 1000.0, 3)
+    except (ValueError, TypeError):
+        return None
+
+
+def collect_fiber_info(fc):
+    """Fibre metrics (AON/GPON/XGS-PON) from X_AVM-DE_WANFiber1.
+
+    Only present on fibre boxes such as the FRITZ!Box 5590 Fiber; on DSL
+    or cable boxes the service does not exist and nothing is returned.
+    """
+    m = {}
+    svc = _find_service(fc, "WANFiber")
+    if not svc:
+        return m
+
+    r = safe_call(fc, svc, "GetInfo")
+    log.debug("TR-064 fiber GetInfo raw: %s", r)
+    if r:
+        for key, zkey in [
+            ("NewOpticalSignalLevel", "optical_rx_dbm"),
+            ("NewLowerOpticalThreshold", "optical_rx_lower_threshold_dbm"),
+            ("NewUpperOpticalThreshold", "optical_rx_upper_threshold_dbm"),
+            ("NewTransmitOpticalLevel", "optical_tx_dbm"),
+            ("NewLowerTransmitPowerThreshold", "optical_tx_lower_threshold_dbm"),
+            ("NewUpperTransmitPowerThreshold", "optical_tx_upper_threshold_dbm"),
+        ]:
+            if key in r:
+                v = _dbm(r[key])
+                # 0 = not delivered by the box (a real level is never exactly 0.000)
+                if v:
+                    m[f"fritzbox.fiber.{zkey}"] = v
+        for key, zkey in [
+            ("NewSFPVendor", "sfp_vendor"),
+            ("NewSFPPartNumber", "sfp_part_number"),
+            ("NewSFPSerialNumber", "sfp_serial_number"),
+            ("NewSFPType", "sfp_type"),
+            ("NewTXWaveLength", "tx_wavelength"),
+            ("NewFiberMode", "mode"),
+        ]:
+            if key in r:
+                m[f"fritzbox.fiber.{zkey}"] = r[key]
+
+    # GetInfoGPON returns 401 on AON boxes/modules
+    r = safe_call(fc, svc, "GetInfoGPON")
+    log.debug("TR-064 fiber GetInfoGPON raw: %s", r)
+    if r:
+        for key, zkey in [
+            ("NewGponSerial", "gpon_serial"),
+            ("NewPONId", "pon_id"),
+            ("NewONUId", "onu_id"),
+            ("NewUNIType", "uni_type"),
+            ("NewGEMPortCount", "gem_port_count"),
+        ]:
+            if key in r:
+                m[f"fritzbox.fiber.{zkey}"] = r[key]
+
+    r = safe_call(fc, svc, "GetStatistics")
+    log.debug("TR-064 fiber GetStatistics raw: %s", r)
+    if r:
+        for key, zkey in [
+            ("NewBytesSent", "bytes_sent"),
+            ("NewBytesReceived", "bytes_received"),
+            ("NewPacketsSent", "packets_sent"),
+            ("NewPacketsReceived", "packets_received"),
+            ("NewPacketErrorsSent", "packet_errors_sent"),
+            ("NewPacketErrorsReceived", "packet_errors_received"),
+            ("NewPacketsMulticast", "packets_multicast"),
+            ("NewConnectionRateDown", "rate_down"),
+            ("NewConnectionRateUp", "rate_up"),
+            ("NewBestTrainState", "best_train_state"),
+            ("NewResyncs", "resyncs"),
+            ("NewMinutesInShowtime", "minutes_in_showtime"),
+        ]:
+            if key in r:
+                m[f"fritzbox.fiber.{zkey}"] = r[key]
+
+    # Physical link state of the Ethernet/SFP uplink (also used by AON)
+    r = safe_call(fc, "WANEthernetLinkConfig1", "GetEthernetLinkStatus")
+    if r:
+        m["fritzbox.fiber.link_status"] = r.get("NewEthernetLinkStatus", "")
+    return m
+
+
 def collect_wlan_info(fc):
     global _wlan_signal_by_mac
     m = {}
@@ -1144,8 +1239,37 @@ def collect_lua_netdev(lua):
                         m[f"fritzbox.netdev[{sn},band]"] = (
                             mo.group(1).replace(",", ".") + " GHz"
                         )
+                # LAN devices carry no GHz, only e.g. "1 Gbit/s" or "100 Mbit/s":
+                # in any property row or, on FRITZ!OS 8.x, in the "port" field
+                # ("LAN 1 mit 1 Gbit/s"); unit is normalised to Mbit/s.
+                if speed is None:
+                    speed_texts = [
+                        p.get("txt", "") for p in props_list if isinstance(p, dict)
+                    ] if isinstance(props_list, list) else []
+                    speed_texts.append(dev.get("port", ""))
+                    for ptxt in speed_texts:
+                        ml = re.search(
+                            r"(\d+(?:[,.]\d+)?)(?:\s*/\s*(\d+(?:[,.]\d+)?))?\s*([GMK])bit/s",
+                            str(ptxt),
+                            re.I,
+                        )
+                        if ml:
+                            factor = {"g": 1000.0, "m": 1.0, "k": 0.001}[
+                                ml.group(3).lower()
+                            ]
+                            vals = [
+                                float(x.replace(",", "."))
+                                for x in (ml.group(1), ml.group(2))
+                                if x
+                            ]
+                            speed = round(max(vals) * factor, 3)
+                            break
                 if speed is not None:
                     m[f"fritzbox.netdev[{sn},speed]"] = speed
+                else:
+                    log.debug(
+                        "LUA netDev: no speed for %s (properties: %s)", name, props_list
+                    )
 
                 # RSSI: try structured LUA fields, then TR-064 signal data by MAC
                 rssi = None
@@ -1483,6 +1607,253 @@ def collect_lua_dsl_detail(lua):
     return m
 
 
+# Fibre pages of the web UI (Internet > Glasfaser-Informationen). The page name
+# is not documented by AVM; override with LUA_FIBER_PAGES (comma separated)
+# once the real name is known (browser dev tools: POST /data.lua, field "page").
+LUA_FIBER_PAGES = [
+    p.strip()
+    for p in os.environ.get(
+        "LUA_FIBER_PAGES", "inetOv,fiberStat,fiberInfo,gponOv,overview"
+    ).split(",")
+    if p.strip()
+]
+_lua_fiber_state = {"page": None, "misses": 0, "dumped": False}
+_FIBER_LEVEL_KEYS = (
+    "fritzbox.fiber.optical_rx_dbm",
+    "fritzbox.fiber.optical_tx_dbm",
+    "fritzbox.fiber.laser_temperature",
+    "fritzbox.fiber.laser_voltage",
+)
+# Only these fields are ever logged: the overview page also carries call lists
+# and device names, which must not end up in the log.
+_FIBER_LOG_LABEL = re.compile(
+    r"fiber|glas|laser|dbm|gpon|sfp|\brx|\btx|wellen|leistung|spannung|"
+    r"temperatur|empfang|senden|\bpon|onu|verbindungstyp",
+    re.I,
+)
+
+_FIBER_NUM = r"(-?\d+(?:[.,]\d+)?)"
+# (metric key, regex on the lower-cased label, unit regex on the value)
+_FIBER_LABEL_RULES = [
+    (
+        "optical_rx_dbm",
+        re.compile(r"(rx|recv|receiv|empfang)[a-z ]*(dbm|power|level|leistung)"),
+        "dbm",
+    ),
+    (
+        "optical_tx_dbm",
+        re.compile(r"(tx|trans|send)[a-z ]*(dbm|power|level|leistung)"),
+        "dbm",
+    ),
+    ("laser_temperature", re.compile(r"temp"), "c"),
+    ("laser_voltage", re.compile(r"spannung|voltage"), "v"),
+]
+
+
+def _fiber_flatten(node, label="", out=None):
+    """Flatten the data.lua JSON into (label, value) string pairs.
+
+    Handles plain dicts/lists, {title/label/name, value/text} objects and
+    "Label: value" strings, since the page structure is not documented.
+    """
+    if out is None:
+        out = []
+    if isinstance(node, dict):
+        lab = next(
+            (str(node[k]) for k in ("title", "label", "name", "key") if k in node), None
+        )
+        val = next(
+            (node[k] for k in ("value", "val", "text") if k in node),
+            None,
+        )
+        if lab is not None and isinstance(val, (str, int, float)):
+            out.append((lab, str(val)))
+        for k, v in node.items():
+            _fiber_flatten(v, f"{label}.{k}" if label else str(k), out)
+    elif isinstance(node, list):
+        for i, v in enumerate(node):
+            _fiber_flatten(v, f"{label}.{i}", out)
+    elif isinstance(node, (str, int, float)) and not isinstance(node, bool):
+        out.append((label, str(node)))
+    return out
+
+
+def _fiber_parse_pairs(pairs):
+    m = {}
+    for label, value in pairs:
+        text = value.strip().replace("−", "-")
+        # "Empfangsleistung: -16.8 dBm" in a single string
+        sm = re.match(r"^([^:]{2,60}):\s*(.+)$", text)
+        if sm:
+            label, text = sm.group(1), sm.group(2).strip()
+        low = label.lower()
+
+        # overview page: fiber.down / fiber.up in kbit/s
+        if low in ("fiber.down", "fiber.up") and re.fullmatch(r"\d+", text):
+            m.setdefault(
+                "fritzbox.fiber.rate_down"
+                if low.endswith("down")
+                else "fritzbox.fiber.rate_up",
+                int(text),
+            )
+            continue
+
+        rate = re.match(r"^" + _FIBER_NUM + r"\s*([gmk])bit", text, re.I)
+        if rate and re.search(r"empfangen|receiv|down", low):
+            mult = {"g": 1_000_000, "m": 1_000, "k": 1}[rate.group(2).lower()]
+            m.setdefault(
+                "fritzbox.fiber.rate_down",
+                int(float(rate.group(1).replace(",", ".")) * mult),
+            )
+            continue
+        if rate and re.search(r"senden|\bsend|\bup", low):
+            mult = {"g": 1_000_000, "m": 1_000, "k": 1}[rate.group(2).lower()]
+            m.setdefault(
+                "fritzbox.fiber.rate_up",
+                int(float(rate.group(1).replace(",", ".")) * mult),
+            )
+            continue
+
+        for key, rx, unit in _FIBER_LABEL_RULES:
+            if not rx.search(low):
+                continue
+            um = re.match(r"^" + _FIBER_NUM + r"\s*(dbm|°\s*c|v)\b", text, re.I)
+            if not um:
+                continue
+            u = um.group(2).lower().replace("°", "").strip()
+            if u != unit:
+                continue
+            m.setdefault(
+                f"fritzbox.fiber.{key}", float(um.group(1).replace(",", "."))
+            )
+            break
+    return m
+
+
+def _fiber_number(text, unit):
+    """'-16.8 dBm' / '56.2°C' / '3.3 V' -> float, or None if the unit differs."""
+    mt = re.match(
+        r"^\s*" + _FIBER_NUM + r"\s*(dbm|°\s*c|v)\b", str(text or "").replace("−", "-"), re.I
+    )
+    if not mt or mt.group(2).lower().replace("°", "").strip() != unit:
+        return None
+    return float(mt.group(1).replace(",", "."))
+
+
+def _fiber_parse_inetov(data):
+    """Parse data.lua?page=inetOv (Internet > Glasfaser-Informationen).
+
+    Structure (FRITZ!OS 8.2x, 5590 Fiber): data.connectionData.{infoMiddle,
+    infoLeft, line}; Rx/Tx are usValue (Tx) / dsValue (Rx) of one detail row.
+    """
+    m = {}
+    cd = (data or {}).get("connectionData")
+    if not isinstance(cd, dict):
+        return m
+
+    middle = cd.get("infoMiddle") or {}
+    updown = (middle.get("upDownInfos") or {}).get("details") or []
+    for row in updown if isinstance(updown, list) else []:
+        if not isinstance(row, dict):
+            continue
+        tx = _fiber_number(row.get("usValue"), "dbm")
+        rx = _fiber_number(row.get("dsValue"), "dbm")
+        if tx is not None:
+            m["fritzbox.fiber.optical_tx_dbm"] = tx
+        if rx is not None:
+            m["fritzbox.fiber.optical_rx_dbm"] = rx
+
+    more = (cd.get("infoLeft") or {}).get("moreDetails") or {}
+    entries = more.get("details") or {}
+    if isinstance(entries, dict):
+        entries = list(entries.values())
+    for e in entries if isinstance(entries, list) else []:
+        if not isinstance(e, dict):
+            continue
+        text = str(e.get("text", "")).lower()
+        value = str(e.get("value", "")).strip()
+        if "lasertemperatur" in text:
+            v = _fiber_number(value, "c")
+            if v is not None:
+                m["fritzbox.fiber.laser_temperature"] = v
+        elif "spannung" in text:
+            v = _fiber_number(value, "v")
+            if v is not None:
+                m["fritzbox.fiber.laser_voltage"] = v
+        elif "seriennummer" in text and value:
+            m["fritzbox.fiber.gpon_serial"] = value
+
+    line = cd.get("line")
+    if isinstance(line, list) and line and isinstance(line[0], dict):
+        if line[0].get("mode"):
+            m["fritzbox.fiber.mode"] = str(line[0]["mode"])
+    return m
+
+
+def collect_lua_fiber(lua):
+    """Fibre values the web UI shows but TR-064 leaves at 0 (Rx/Tx level, laser)."""
+    st = _lua_fiber_state
+    if st["page"]:
+        pages = [st["page"]]
+    else:
+        # probing costs one request per candidate: retry only every 60 cycles
+        st["misses"] += 1
+        if st["misses"] > 1 and (st["misses"] - 1) % 60 != 0:
+            return {}
+        pages = LUA_FIBER_PAGES
+
+    # Unknown page names return the generic overview instead of an error, so a
+    # page only counts as the fibre page if it yields Rx/Tx or laser values.
+    merged = {}
+    seen = []
+    for page in pages:
+        data = lua.data_lua(page)
+        d = data.get("data") if isinstance(data, dict) else None
+        pairs = _fiber_flatten(d) if d else []
+        if not pairs:
+            continue
+        m = {**_fiber_parse_pairs(pairs), **_fiber_parse_inetov(d)}
+        if any(k in m for k in _FIBER_LEVEL_KEYS):
+            if st["page"] != page:
+                st["page"] = page
+                log.info(
+                    "LUA fiber: using data.lua page '%s' (parsed: %s)",
+                    page,
+                    sorted(m),
+                )
+            return {**merged, **m}
+        seen.append((page, pairs))
+        for k, v in m.items():
+            merged.setdefault(k, v)
+
+    if not st["dumped"]:
+        st["dumped"] = True
+        # The generic overview (fallback for unknown names) carries personal
+        # data and is filtered; a page of its own is logged completely.
+        relevant = []
+        for page, pairs in seen:
+            if any(lab.startswith("fritzos.") for lab, _ in pairs):
+                relevant.append(
+                    (
+                        page,
+                        [p for p in pairs if _FIBER_LOG_LABEL.search(p[0])],
+                    )
+                )
+            else:
+                relevant.append((page, [(lab, val[:80]) for lab, val in pairs]))
+        log.info(
+            "LUA fiber: no Rx/Tx or laser values found (pages tried: %s, parsed: %s). "
+            "Fibre-related fields per page: %s. Set LUA_FIBER_PAGES to the page name "
+            "from the browser dev tools (POST /data.lua, field 'page').",
+            pages,
+            sorted(merged),
+            json.dumps(
+                [(p, f[:150]) for p, f in relevant], ensure_ascii=False
+            ),
+        )
+    return merged
+
+
 # ===================================================================
 # Callmonitor (TCP 1012)
 # ===================================================================
@@ -1771,6 +2142,7 @@ def collect_all(fc, lua, cmon):
     for name, fn in [
         ("wan", collect_wan_info),
         ("dsl", collect_dsl_info),
+        ("fiber", collect_fiber_info),
         ("wlan", collect_wlan_info),
         ("lan", collect_lan_info),
         ("homeauto", collect_homeauto_info),
@@ -1784,14 +2156,20 @@ def collect_all(fc, lua, cmon):
         except Exception as e:
             log.warning("TR-064 %s: %s", name, e)
     if lua:
-        for name, fn in [
+        lua_collectors = [
             ("system", collect_lua_system),
             ("traffic", collect_lua_traffic),
             ("netdev", collect_lua_netdev),
             ("overview", collect_lua_overview),
             ("energy", collect_lua_energy),
-            ("dsl_detail", collect_lua_dsl_detail),
-        ]:
+        ]
+        # dslStat only exists on DSL boxes (not on fibre/cable models)
+        if "WANDSLInterfaceConfig1" in fc.services:
+            lua_collectors.append(("dsl_detail", collect_lua_dsl_detail))
+        # fibre values that TR-064 does not deliver on FRITZ!Box Fiber models
+        if _find_service(fc, "WANFiber"):
+            lua_collectors.append(("fiber", collect_lua_fiber))
+        for name, fn in lua_collectors:
             try:
                 r = fn(lua)
                 m.update(r)

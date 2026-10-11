@@ -203,6 +203,312 @@ zabbix_export:
               tags:
                 - tag: scope
                   value: notice
+        - uuid: 3cdf35049e2841e3920002de5307e78e
+          name: 'Fiber: Optical receive level'
+          type: TRAP
+          key: fritzbox.fiber.optical_rx_dbm
+          value_type: FLOAT
+          units: dBm
+          description: 'Downstream optical signal level (X_AVM-DE_WANFiber GetInfo).'
+          tags:
+            - tag: component
+              value: fiber
+          triggers:
+            - uuid: a0e90cbfc2214d7db85c6764ec4876e3
+              expression: 'last(/AVM FritzBox TR-064/fritzbox.fiber.optical_rx_dbm)<last(/AVM FritzBox TR-064/fritzbox.fiber.optical_rx_lower_threshold_dbm) and last(/AVM FritzBox TR-064/fritzbox.fiber.optical_rx_lower_threshold_dbm)<>0'
+              name: 'FritzBox: Optical receive level too low ({ITEM.LASTVALUE}) for {HOST.NAME}'
+              priority: HIGH
+              manual_close: 'YES'
+              tags:
+                - tag: scope
+                  value: availability
+            - uuid: 5e2020b5c7284ce492e7926ae62a89bf
+              expression: 'last(/AVM FritzBox TR-064/fritzbox.fiber.optical_rx_dbm)>last(/AVM FritzBox TR-064/fritzbox.fiber.optical_rx_upper_threshold_dbm) and last(/AVM FritzBox TR-064/fritzbox.fiber.optical_rx_upper_threshold_dbm)<>0'
+              name: 'FritzBox: Optical receive level too high ({ITEM.LASTVALUE}) for {HOST.NAME}'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: scope
+                  value: performance
+        - uuid: ebc6c943d1f1463cbc08002b2d697215
+          name: 'Fiber: Optical receive level lower threshold'
+          type: TRAP
+          key: fritzbox.fiber.optical_rx_lower_threshold_dbm
+          value_type: FLOAT
+          units: dBm
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: e3ec4118afe24ab19ec23f2c3be980bb
+          name: 'Fiber: Optical receive level upper threshold'
+          type: TRAP
+          key: fritzbox.fiber.optical_rx_upper_threshold_dbm
+          value_type: FLOAT
+          units: dBm
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: aa2c64f1c7e64715a7ddd6f0091e149c
+          name: 'Fiber: Optical transmit level'
+          type: TRAP
+          key: fritzbox.fiber.optical_tx_dbm
+          value_type: FLOAT
+          units: dBm
+          description: 'Mean optical launch power of the SFP module.'
+          tags:
+            - tag: component
+              value: fiber
+          triggers:
+            - uuid: 7d2bc90defa4434cb09f172a5d2002d0
+              expression: '(last(/AVM FritzBox TR-064/fritzbox.fiber.optical_tx_dbm)<last(/AVM FritzBox TR-064/fritzbox.fiber.optical_tx_lower_threshold_dbm) and last(/AVM FritzBox TR-064/fritzbox.fiber.optical_tx_lower_threshold_dbm)<>0) or (last(/AVM FritzBox TR-064/fritzbox.fiber.optical_tx_dbm)>last(/AVM FritzBox TR-064/fritzbox.fiber.optical_tx_upper_threshold_dbm) and last(/AVM FritzBox TR-064/fritzbox.fiber.optical_tx_upper_threshold_dbm)<>0)'
+              name: 'FritzBox: Optical transmit level out of range ({ITEM.LASTVALUE}) for {HOST.NAME}'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: scope
+                  value: performance
+        - uuid: 54b83c3b6c0f4b599165bad6dce191f7
+          name: 'Fiber: Optical transmit level lower threshold'
+          type: TRAP
+          key: fritzbox.fiber.optical_tx_lower_threshold_dbm
+          value_type: FLOAT
+          units: dBm
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: bfb6158bbfff4f23babb2363dedcd9c7
+          name: 'Fiber: Optical transmit level upper threshold'
+          type: TRAP
+          key: fritzbox.fiber.optical_tx_upper_threshold_dbm
+          value_type: FLOAT
+          units: dBm
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: b10fee80b1c048e8900639e679a9951e
+          name: 'Fiber: Laser temperature'
+          type: TRAP
+          key: fritzbox.fiber.laser_temperature
+          value_type: FLOAT
+          units: '°C'
+          description: 'SFP laser temperature (web UI, LUA).'
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 418861c9157444d999ae6f328548dab3
+          name: 'Fiber: Laser supply voltage'
+          type: TRAP
+          key: fritzbox.fiber.laser_voltage
+          value_type: FLOAT
+          units: V
+          description: 'SFP laser supply voltage (web UI, LUA).'
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: dd52293a917b4438b92cbc2cfbc237cd
+          name: 'Fiber: Mode'
+          type: TRAP
+          key: fritzbox.fiber.mode
+          value_type: TEXT
+          description: 'Current fibre mode (AON, GPON, XGPON, XGSPON, ...).'
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: cc23ef31a08c4dbd99fc97190c7fda4e
+          name: 'Fiber: Ethernet link status'
+          type: TRAP
+          key: fritzbox.fiber.link_status
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 33a0570e30874dc3b9c299fe38cd2dc0
+          name: 'Fiber: SFP vendor'
+          type: TRAP
+          key: fritzbox.fiber.sfp_vendor
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: a68049f2e5104503b9ddb6e0f0eb6176
+          name: 'Fiber: SFP part number'
+          type: TRAP
+          key: fritzbox.fiber.sfp_part_number
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: cd344a3f24814d448806ac606adaae72
+          name: 'Fiber: SFP serial number'
+          type: TRAP
+          key: fritzbox.fiber.sfp_serial_number
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 47533afbaff440508761b840f0992527
+          name: 'Fiber: SFP type'
+          type: TRAP
+          key: fritzbox.fiber.sfp_type
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 3e8d1ea3ec304da688d2e9c49ce081cf
+          name: 'Fiber: TX wavelength'
+          type: TRAP
+          key: fritzbox.fiber.tx_wavelength
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 11a11eb69d6642599ab78ef98cb52fbf
+          name: 'Fiber GPON: Serial'
+          type: TRAP
+          key: fritzbox.fiber.gpon_serial
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 3f5499db2cae4a6b8207ba88fece79c3
+          name: 'Fiber GPON: PON ID'
+          type: TRAP
+          key: fritzbox.fiber.pon_id
+          value_type: TEXT
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 4fa58204049540e5a34ab140c2fc914a
+          name: 'Fiber GPON: ONU ID'
+          type: TRAP
+          key: fritzbox.fiber.onu_id
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: ebb49d4878f04fe68440d2a89a08f15e
+          name: 'Fiber GPON: UNI type'
+          type: TRAP
+          key: fritzbox.fiber.uni_type
+          value_type: TEXT
+          description: 'PPTP or VEIP'
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 2aa12a2d5b1849eea60a5cc464153ae5
+          name: 'Fiber GPON: GEM port count'
+          type: TRAP
+          key: fritzbox.fiber.gem_port_count
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 2ddaeaa7937646c9875e72e8f740aa24
+          name: 'Fiber: Bytes received'
+          type: TRAP
+          key: fritzbox.fiber.bytes_received
+          units: B
+          description: '32-bit counter as reported by FRITZ!OS, wraps at 4 GiB.'
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 98c62044b4704be4be5aaae346069978
+          name: 'Fiber: Bytes sent'
+          type: TRAP
+          key: fritzbox.fiber.bytes_sent
+          units: B
+          description: '32-bit counter as reported by FRITZ!OS, wraps at 4 GiB.'
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 0546488e0ba3424db06cb718ed1d97d1
+          name: 'Fiber: Packets received'
+          type: TRAP
+          key: fritzbox.fiber.packets_received
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 403be087877a4656bcb8cc8950e973c2
+          name: 'Fiber: Packets sent'
+          type: TRAP
+          key: fritzbox.fiber.packets_sent
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 1ccfcc4cf3934305b24c669d0b304110
+          name: 'Fiber: Packet errors received'
+          type: TRAP
+          key: fritzbox.fiber.packet_errors_received
+          tags:
+            - tag: component
+              value: fiber
+          triggers:
+            - uuid: 1ec755ba5cf44cce9ab069fcd05b3cf3
+              expression: 'change(/AVM FritzBox TR-064/fritzbox.fiber.packet_errors_received)>{$FRITZBOX.FIBER.PACKET_ERRORS.THRESHOLD}'
+              name: 'FritzBox: High packet error rate on fiber link'
+              priority: WARNING
+              tags:
+                - tag: scope
+                  value: performance
+        - uuid: 228f4ebe9480406e934ef8f537d20294
+          name: 'Fiber: Packet errors sent'
+          type: TRAP
+          key: fritzbox.fiber.packet_errors_sent
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 52bb4708183747a3abdfb2f6b4b62ef8
+          name: 'Fiber: Multicast packets'
+          type: TRAP
+          key: fritzbox.fiber.packets_multicast
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 2c23548cfde9467baf349d48dd048fd6
+          name: 'Fiber: Connection rate down'
+          type: TRAP
+          key: fritzbox.fiber.rate_down
+          description: 'Unit as reported by FRITZ!OS (not documented by AVM).'
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 8e6899620b004ea9930a738437b68036
+          name: 'Fiber: Connection rate up'
+          type: TRAP
+          key: fritzbox.fiber.rate_up
+          description: 'Unit as reported by FRITZ!OS (not documented by AVM).'
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 6fce000906834bc08614a7dc0f22d13f
+          name: 'Fiber: Best train state'
+          type: TRAP
+          key: fritzbox.fiber.best_train_state
+          tags:
+            - tag: component
+              value: fiber
+        - uuid: 662342e7058d4e83ab98758ca89ea4c4
+          name: 'Fiber: Resyncs'
+          type: TRAP
+          key: fritzbox.fiber.resyncs
+          tags:
+            - tag: component
+              value: fiber
+          triggers:
+            - uuid: 9bfec85bd5ee4364bd89cba5a127849f
+              expression: 'change(/AVM FritzBox TR-064/fritzbox.fiber.resyncs)>0'
+              name: 'FritzBox: Fiber link resynced on {HOST.NAME}'
+              priority: INFO
+              manual_close: 'YES'
+              tags:
+                - tag: scope
+                  value: notice
+        - uuid: a23adda551d6481d8b91ba7dcf56ee94
+          name: 'Fiber: Minutes in showtime'
+          type: TRAP
+          key: fritzbox.fiber.minutes_in_showtime
+          units: min
+          tags:
+            - tag: component
+              value: fiber
         - uuid: dc000001e5f64abc8def000000000001
           name: 'DSL: ATUC CRC errors'
           type: TRAP
@@ -1579,8 +1885,8 @@ zabbix_export:
               type: TRAP
               key: 'fritzbox.netdev[{#DEVNAME},speed]'
               value_type: FLOAT
-              units: Mbit/s
-              description: 'WLAN connection speed in Mbit/s (max of RX/TX from device properties)'
+              units: '!Mbit/s'
+              description: 'Link speed in Mbit/s: WLAN (max of RX/TX) or LAN port speed. The "!" keeps Zabbix from scaling the unit (1000 Mbit/s instead of 1 KMbit/s).'
               tags:
                 - tag: component
                   value: netdev
@@ -1613,6 +1919,8 @@ zabbix_export:
           value: '100'
         - macro: '{$FRITZBOX.DSL.NOISE_MARGIN.MIN}'
           value: '6'
+        - macro: '{$FRITZBOX.FIBER.PACKET_ERRORS.THRESHOLD}'
+          value: '100'
         - macro: '{$FRITZBOX.RAM_USAGE.WARN}'
           value: '85'
         - macro: '{$FRITZBOX.UPTIME.MIN}'
