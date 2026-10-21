@@ -1215,7 +1215,8 @@ def collect_lua_netdev(lua):
                 if isinstance(props_list, list):
                     for p in props_list:
                         if isinstance(p, dict) and p.get("txt"):
-                            props_txt = p["txt"]
+                            # FRITZ!OS inserts word joiners around '/' in rate units.
+                            props_txt = p["txt"].replace("\u2060", "")
                             break
 
                 speed = None
@@ -1250,7 +1251,7 @@ def collect_lua_netdev(lua):
                     for ptxt in speed_texts:
                         ml = re.search(
                             r"(\d+(?:[,.]\d+)?)(?:\s*/\s*(\d+(?:[,.]\d+)?))?\s*([GMK])bit/s",
-                            str(ptxt),
+                            str(ptxt).replace("\u2060", ""),
                             re.I,
                         )
                         if ml:
@@ -2008,6 +2009,23 @@ def _build_zabbix_sender_cmd(input_file, with_timestamps=False):
     return cmd
 
 
+def _log_sender_failure(result, label):
+    output = (result.stdout + "\n" + result.stderr).strip()
+    summaries = re.findall(r"processed:\s*\d+;\s*failed:\s*\d+;\s*total:\s*\d+", output)
+    log.error(
+        "%s failed (rc=%d): %s",
+        label, result.returncode, " | ".join(summaries) if summaries else output,
+    )
+    if result.returncode == 2:
+        log.error(
+            "Zabbix rejected values for host '%s'. Check the technical Host name, "
+            "enabled host/items, linked template, trapper Allowed hosts (sender IP), "
+            "and the assigned server/proxy. See the Zabbix server/proxy log for "
+            "the rejection reason; 'sent' does not mean accepted.",
+            FRITZBOX_HOSTNAME,
+        )
+
+
 def send_to_zabbix(metrics):
     if not metrics or not ZABBIX_SERVER:
         return False
@@ -2045,12 +2063,7 @@ def send_to_zabbix(metrics):
         if r.returncode == 0:
             log.info("Zabbix sender: %s", r.stdout.strip())
             return True
-        log.error(
-            "Zabbix sender failed (rc=%d): %s %s",
-            r.returncode,
-            r.stdout.strip(),
-            r.stderr.strip(),
-        )
+        _log_sender_failure(r, "Zabbix sender")
         return False
     except Exception as e:
         log.error("zabbix_sender error: %s", e)
@@ -2106,12 +2119,7 @@ def send_log_events_to_zabbix(log_events):
         if r.returncode == 0:
             log.info("Zabbix sender(log): %s", r.stdout.strip())
             return True
-        log.error(
-            "zabbix_sender(log) failed (rc=%d): %s %s",
-            r.returncode,
-            r.stdout.strip(),
-            r.stderr.strip(),
-        )
+        _log_sender_failure(r, "zabbix_sender(log)")
         return False
     except Exception as e:
         log.error("zabbix_sender(log) error: %s", e)

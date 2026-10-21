@@ -101,7 +101,7 @@ cp .env.example .env
 
 ### 4. Import the Zabbix template
 
-Download `templates/template_fritzbox_tr064.yaml` and import it:
+Download `templates/zbx_export_templates.yaml` and import it:
 
 **Configuration > Templates > Import**
 
@@ -127,6 +127,20 @@ LUA: Authenticated (SID=a3f2e1d0...)
 Collected 107 metrics
 Zabbix sender: sent: 107; skipped: 0; total: 107
 ```
+
+## Updating an existing installation
+
+Re-import `templates/zbx_export_templates.yaml` when updating the collector so
+Zabbix has the matching items. Pulling Git changes alone does not update the
+Docker image used by Compose:
+
+```bash
+docker compose pull fritzbox-monitor
+docker compose up -d --force-recreate fritzbox-monitor
+```
+
+For a local source build, run `./build` (or `./build <tag>` matching `VERSION`
+in `.env`) instead of pulling, then recreate the container.
 
 ## Environment Variables
 
@@ -175,6 +189,16 @@ chmod +x build
 ```
 
 ## Troubleshooting
+
+**`processed: 0; failed: ...` / sender exit code 2**: Zabbix was reached but
+rejected the values. `sent` counts transmitted values, not accepted values.
+Check the technical **Host name** against `FRITZBOX_HOSTNAME`, enable the host
+and its items, and link the imported template. Trapper **Allowed hosts** must
+allow the sender's source address as seen by Zabbix (the container/Docker host,
+not the Fritz!Box address). If the host is monitored by a proxy, send to that
+proxy. After configuration changes, allow up to 60 seconds for the Zabbix
+configuration cache to update. The Zabbix server/proxy log contains the rejection
+reason; the sender's batch response does not identify individual rejected keys.
 
 **TR-064 errors / metrics missing**: UPnP may be disabled. Enable "Allow access for applications" under **Home Network > Network > General** (Zugriff für Anwendungen erlauben).
 
