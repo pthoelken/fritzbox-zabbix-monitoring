@@ -31,7 +31,6 @@ ENV FRITZBOX_IP=192.168.178.1 \
     ENABLE_LUA=true \
     ENABLE_CALLMONITOR=false \
     CALLMONITOR_PORT=1012 \
-    DEVICE_LOG_ITEM_KEY=fritzbox.device.log \
     DEVICE_LOG_HISTORY_SIZE=5000
 
 CMD ["python3", "-u", "/opt/fritzbox_monitor.py"]
